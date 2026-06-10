@@ -525,7 +525,8 @@
             form.append('role', role);
 
             try {
-                const res = await fetch('login_process.php', {
+                // Use Apache-hosted PHP endpoint. Adjust if your Apache uses a different folder or hostname.
+                const res = await fetch('http://localhost/projrctsaka/login_process.php', {
                     method: 'POST',
                     body: form
                 });
