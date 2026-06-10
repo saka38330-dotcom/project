@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mahasiswa - Portal Beasiswa</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-50 min-h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="bg-indigo-600 text-white p-4 flex justify-between items-center shadow">
+        <h1 class="text-lg font-bold">🎓 Ruang Mahasiswa</h1>
+        <div class="flex items-center gap-4">
+            <span class="text-sm font-medium">Budi Santoso (NIM: 22010101)</span>
+            <a href="index.html" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition">Keluar</a>
+        </div>
+    </nav>
+
+    <div class="max-w-5xl mx-auto p-6">
+        <!-- Status Beasiswa Aktif -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
+            <h2 class="text-sm font-semibold text-slate-500 uppercase">Status Pengajuan Anda</h2>
+            <div class="flex flex-col md:flex-row md:items-center justify-between mt-3 gap-4">
+                <div>
+                    <h3 class="text-xl font-bold text-slate-800">Beasiswa Prestasi Unggul 2026</h3>
+                    <p class="text-sm text-slate-500 mt-1">Tahap: <span class="font-semibold text-yellow-600">Proses Verifikasi Berkas</span></p>
+                </div>
+                <span class="bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full text-xs font-bold self-start md:self-center">⏳ PENDING</span>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Kiri: Daftar Kelengkapan Dokumen -->
+            <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-slate-800">Kelengkapan Berkas Pendaftaran</h3>
+                    <button onclick="openUploadModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg cursor-pointer font-medium transition">
+                        + Unggah Baru
+                    </button>
+                </div>
+                <div id="berkas-container" class="divide-y divide-slate-100">
+                    <!-- Data berkas di-render oleh JavaScript -->
+                </div>
+            </div>
+
+            <!-- Kanan: Estimasi Pencarian Dana -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-fit">
+                <h3 class="font-bold text-slate-800 mb-4">Informasi Dana</h3>
+                <div class="bg-slate-50 p-4 rounded-lg mb-3">
+                    <p class="text-xs text-slate-500">Nominal Beasiswa</p>
+                    <p class="text-lg font-bold text-slate-800">Rp 5.000.000</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-lg">
+                    <p class="text-xs text-slate-500">Rekening Tujuan</p>
+                    <p class="text-sm font-semibold text-slate-700">Bank Mandiri — ****8921</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FORM POPUP -->
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+            <div class="bg-indigo-600 text-white p-4"><h3 class="font-bold text-lg">📁 Unggah Dokumen Baru</h3></div>
+            <form id="uploadForm" onsubmit="handleUploadSubmit(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Nama / Jenis Dokumen</label>
+                    <input type="text" id="document-name" placeholder="Contoh: Surat Rekomendasi Dosen" required class="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-indigo-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Pilih File (Simulasi PDF)</label>
+                    <input type="file" id="file-input" accept=".pdf" required class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+                </div>
+                <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
+                    <button type="button" onclick="closeUploadModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium">Kirim Berkas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // DATA AWAL DEFAULT (Jika database di browser masih kosong)
+        const defaultBerkas = [
+            { id: 1, namaMhs: "Budi Santoso", nim: "22010101", jenis: "Transkrip_Nilai_Semester3.pdf", tanggal: "01 Juni 2026", status: "Belum Diperiksa" },
+            { id: 2, namaMhs: "Siti Rahma", nim: "22010102", jenis: "Surat_Keterangan_Tidak_Mampu.pdf", tanggal: "02 Juni 2026", status: "Belum Diperiksa" }
+        ];
+
+        // Ambil data dari Database Browser (localStorage)
+        let dokumenList = JSON.parse(localStorage.getItem('database_beasiswa')) || defaultBerkas;
+
+        window.onload = function() {
+            renderBerkas();
+        };
+
+        function renderBerkas() {
+            const container = document.getElementById('berkas-container');
+            container.innerHTML = '';
+
+            // Filter dokumen khusus milik Budi Santoso (Mahasiswa yang sedang login)
+            let berkasMhs = dokumenList.filter(d => d.nim === "22010101");
+
+            if(berkasMhs.length === 0) {
+                container.innerHTML = `<p class="text-sm text-slate-400 italic py-4">Belum ada berkas yang diunggah.</p>`;
+                return;
+            }
+
+            berkasMhs.forEach((item) => {
+                let statusColor = 'text-yellow-600';
+                if (item.status === 'Disetujui') statusColor = 'text-green-600';
+                if (item.status === 'Ditolak') statusColor = 'text-red-500';
+
+                container.innerHTML += `
+                    <div class="py-3 flex justify-between items-center text-sm hover:bg-slate-50/50 px-2 rounded-lg transition">
+                        <div>
+                            <p class="font-medium text-slate-700">${item.jenis}</p>
+                            <p class="text-xs text-slate-400">Diunggah pada: ${item.tanggal}</p>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <span class="${statusColor} text-xs font-semibold">
+                                ${item.status === 'Belum Diperiksa' ? '⏳ Menunggu Verifikasi' : item.status === 'Disetujui' ? '✅ Disetujui' : '❌ Ditolak'}
+                            </span>
+                            <button onclick="deleteBerkas(${item.id})" class="text-red-400 hover:text-red-600 text-xs cursor-pointer">Hapus</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function openUploadModal() { document.getElementById('uploadModal').classList.remove('hidden'); }
+        function closeUploadModal() { document.getElementById('uploadModal').classList.add('hidden'); document.getElementById('uploadForm').reset(); }
+
+        function handleUploadSubmit(event) {
+            event.preventDefault();
+            const docName = document.getElementById('document-name').value;
+            const fileInput = document.getElementById('file-input');
+            let rawFileName = fileInput.files[0] ? fileInput.files[0].name : "dokumen.pdf";
+
+            // Tambah data baru ke struktur database global
+            const dataBaru = {
+                id: Date.now(), // ID Unik berbasis waktu
+                namaMhs: "Budi Santoso",
+                nim: "22010101",
+                jenis: docName + " (" + rawFileName + ")",
+                tanggal: "02 Juni 2026",
+                status: "Belum Diperiksa"
+            };
+
+            dokumenList.push(dataBaru);
+            simpanKeDatabase();
+            closeUploadModal();
+            renderBerkas();
+            alert("Sukses! Berkas tersimpan di database lokal.");
+        }
+
+        function deleteBerkas(id) {
+            if (confirm("Hapus dokumen ini?")) {
+                dokumenList = dokumenList.filter(d => d.id !== id);
+                simpanKeDatabase();
+                renderBerkas();
+            }
+        }
+
+        // Fungsi menyimpan array ke localStorage browser
+        function simpanKeDatabase() {
+            localStorage.setItem('database_beasiswa', JSON.stringify(dokumenList));
+        }
+    </script>
+</body>
+</html>

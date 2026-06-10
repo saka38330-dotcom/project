@@ -3,82 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Portal Beasiswa</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Masuk - Portal Beasiswa Universitas</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
+            animation: bgShift 20s ease infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
+        .particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) translateX(50px); opacity: 0; }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .input-field {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .role-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .role-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .role-card.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(139, 92, 246, 0.08) 100%);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shake {
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+        }
+
+        @keyframes shake {
+            10%, 90% { transform: translateX(-1px); }
+            20%, 80% { transform: translateX(2px); }
+            30%, 50%, 70% { transform: translateX(-4px); }
+            40%, 60% { transform: translateX(4px); }
+        }
+
+        .spinner {
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .checkbox-custom {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .checkbox-custom:checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .checkbox-custom:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 11px;
+            top: -2px;
+            left: 1px;
+            font-weight: bold;
+        }
+
+        .error-box {
+            animation: slideDown 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-pulse {
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+<body class="flex items-center justify-center p-4 min-h-screen">
 
-    <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100">
-        <div class="text-center mb-6">
-            <h1 class="text-2xl font-black text-slate-800 tracking-tight">Portal Beasiswa</h1>
-            <p class="text-xs text-slate-400 mt-1">Masuk menggunakan akun simulasi (Tanpa Database Server)</p>
+    <!-- Floating Particles -->
+    <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+    <div class="particle" style="left: 20%; animation-delay: 2s;"></div>
+    <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+    <div class="particle" style="left: 40%; animation-delay: 1s;"></div>
+    <div class="particle" style="left: 50%; animation-delay: 3s;"></div>
+    <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+    <div class="particle" style="left: 70%; animation-delay: 2.5s;"></div>
+    <div class="particle" style="left: 80%; animation-delay: 4.5s;"></div>
+    <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+
+    <div class="glass-card p-8 md:p-10 rounded-3xl w-full max-w-md border border-white/10 fade-in relative z-10">
+        
+        <!-- Logo & Header -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg mb-4 logo-pulse">
+                <span class="text-3xl">🎓</span>
+            </div>
+            <p class="text-[10px] uppercase tracking-[0.3em] text-blue-500 font-bold mb-2">Portal Beasiswa</p>
+            <h1 class="text-2xl md:text-3xl font-black tracking-tight text-slate-800">Sistem Pendaftaran</h1>
+            <p class="text-xs text-slate-400 mt-2">Masuk untuk mengakses sistem beasiswa</p>
+            <p class="text-[9px] text-slate-300 mt-1 font-mono">v2.1 • Build 2026.06</p>
         </div>
 
-        <div id="error-box" class="hidden bg-red-50 text-red-600 text-xs p-3 rounded-lg mb-4 font-medium border border-red-200">
-            ❌ Username, Password, atau Peran yang Anda pilih salah!
+        <!-- Error Box -->
+        <div id="error-box" class="hidden error-box bg-red-50 text-red-600 text-xs p-4 rounded-xl mb-5 font-medium border border-red-200 flex items-start gap-2">
+            <span class="text-lg flex-shrink-0">⚠️</span>
+            <div>
+                <p class="font-bold">Login Gagal</p>
+                <p id="error-message" class="mt-0.5 text-red-500">Username, password, atau peran yang Anda pilih salah.</p>
+            </div>
         </div>
 
-        <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-            <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Username / NIM</label>
-                <input type="text" id="username" required placeholder="Masukkan username" 
-                    class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:outline-blue-500">
+        <!-- Main Login Form -->
+        <form id="mainForm" onsubmit="handleLoginSubmit(event)" class="space-y-5">
+            
+            <!-- Username Field -->
+            <div class="slide-up" style="animation-delay: 0.1s;">
+                <label class="block text-[11px] font-bold text-slate-600 mb-2 uppercase tracking-wider">
+                    Username / NIM
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">👤</span>
+                    <input type="text" id="usernameInput" required placeholder="Masukkan username atau NIM" 
+                        class="input-field w-full pl-10 pr-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none">
+                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Password</label>
-                <input type="password" id="password" required placeholder="••••••••" 
-                    class="w-full p-2.5 border border-slate-200 rounded-xl text-sm focus:outline-blue-500">
+            <!-- Password Field -->
+            <div class="slide-up" style="animation-delay: 0.2s;">
+                <label class="block text-[11px] font-bold text-slate-600 mb-2 uppercase tracking-wider">
+                    Password
+                </label>
+                <div class="relative">
+                    <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm">🔒</span>
+                    <input type="password" id="passwordInput" required placeholder="Masukkan password" 
+                        class="input-field w-full pl-10 pr-12 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none">
+                    <button type="button" onclick="togglePassword()" class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-500 text-sm cursor-pointer transition">
+                        <span id="eyeIcon">👁️</span>
+                    </button>
+                </div>
             </div>
 
-            <div>
-                <label class="block text-xs font-bold text-slate-600 mb-1 uppercase tracking-wider">Masuk Sebagai</label>
-                <select id="role" required class="w-full p-2.5 border border-slate-200 rounded-xl text-sm bg-white focus:outline-blue-500 cursor-pointer">
-                    <option value="mahasiswa">Mahasiswa (Pendaftar)</option>
-                    <option value="verifikator">Verifikator (Tim Seleksi)</option>
-                    <option value="admin">Master Admin</option>
-                </select>
+            <!-- Role Selection -->
+            <div class="slide-up" style="animation-delay: 0.3s;">
+                <label class="block text-[11px] font-bold text-slate-600 mb-3 uppercase tracking-wider">
+                    Masuk Sebagai
+                </label>
+                <div class="grid grid-cols-3 gap-2">
+                    <div onclick="selectRole('mahasiswa')" id="role-mahasiswa" class="role-card selected bg-white border-2 border-slate-200 rounded-xl p-3 text-center">
+                        <div class="text-2xl mb-1">🎓</div>
+                        <p class="text-[10px] font-bold text-slate-700">Mahasiswa</p>
+                    </div>
+                    <div onclick="selectRole('verifikator')" id="role-verifikator" class="role-card bg-white border-2 border-slate-200 rounded-xl p-3 text-center">
+                        <div class="text-2xl mb-1">🔍</div>
+                        <p class="text-[10px] font-bold text-slate-700">Verifikator</p>
+                    </div>
+                    <div onclick="selectRole('admin')" id="role-admin" class="role-card bg-white border-2 border-slate-200 rounded-xl p-3 text-center">
+                        <div class="text-2xl mb-1">⚙️</div>
+                        <p class="text-[10px] font-bold text-slate-700">Admin</p>
+                    </div>
+                </div>
+                <input type="hidden" id="roleInput" value="mahasiswa">
             </div>
 
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-xl text-sm transition shadow-md cursor-pointer mt-2">
-                Masuk Sistem
+            <!-- Remember Me -->
+            <div class="flex items-center justify-between slide-up" style="animation-delay: 0.4s;">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="rememberMe" class="checkbox-custom">
+                    <span class="text-xs text-slate-600 font-medium">Ingat saya</span>
+                </label>
+                <a href="#" onclick="showForgotPassword(event)" class="text-xs text-blue-500 hover:text-blue-600 font-semibold transition">
+                    Lupa password?
+                </a>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submitBtn" class="btn-primary w-full text-white font-bold py-3.5 rounded-xl text-sm transition shadow-lg cursor-pointer slide-up flex items-center justify-center gap-2" style="animation-delay: 0.5s;">
+                <span id="btnText">Masuk ke Sistem</span>
+                <div id="btnSpinner" class="spinner hidden"></div>
             </button>
+
         </form>
 
-        <div class="mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-500 space-y-1.5">
-            <p class="font-bold text-slate-700">💡 Akun Simulasi Login:</p>
-            <div class="space-y-1 font-mono text-slate-600">
-                <p>• <strong>Mahasiswa:</strong> 22010101 / 22010101</p>
-                <p>• <strong>Verifikator:</strong> verifikator123 / verifikator123</p>
-                <p>• <strong>Admin:</strong> admin / admin123</p>
+        <!-- Register Link -->
+        <div class="mt-3 text-center slide-up" style="animation-delay: 0.55s;">
+            <p class="text-xs text-slate-500">Belum punya akun? <a href="register.html" class="text-blue-500 font-semibold">Daftar di sini</a></p>
+        </div>
+
+        <!-- Demo Credentials -->
+        <div class="mt-6 p-4 bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-xl border border-slate-200 slide-up" style="animation-delay: 0.6s;">
+            <p class="text-[10px] font-bold text-slate-700 mb-2 flex items-center gap-1.5">
+                <span class="text-sm">💡</span> Akun Demo untuk Testing
+            </p>
+            <div class="space-y-1.5 text-[11px] font-mono">
+                <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-slate-100">
+                    <div>
+                        <p class="text-slate-400 text-[9px] uppercase font-bold">Mahasiswa</p>
+                        <p class="text-slate-700 font-semibold">22010101 / 22010101</p>
+                    </div>
+                    <button onclick="fillDemo('22010101', '22010101', 'mahasiswa')" class="text-[9px] bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded font-bold transition cursor-pointer">
+                        Isi
+                    </button>
+                </div>
+                <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-slate-100">
+                    <div>
+                        <p class="text-slate-400 text-[9px] uppercase font-bold">Verifikator</p>
+                        <p class="text-slate-700 font-semibold">verifikator123</p>
+                    </div>
+                    <button onclick="fillDemo('verifikator123', 'verifikator123', 'verifikator')" class="text-[9px] bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded font-bold transition cursor-pointer">
+                        Isi
+                    </button>
+                </div>
+                <div class="flex justify-between items-center p-2 bg-white rounded-lg border border-slate-100">
+                    <div>
+                        <p class="text-slate-400 text-[9px] uppercase font-bold">Admin</p>
+                        <p class="text-slate-700 font-semibold">admin / admin123</p>
+                    </div>
+                    <button onclick="fillDemo('admin', 'admin123', 'admin')" class="text-[9px] bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded font-bold transition cursor-pointer">
+                        Isi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-6 text-center slide-up" style="animation-delay: 0.7s;">
+            <p class="text-[10px] text-slate-400">
+                © 2026 Portal Beasiswa Universitas
+            </p>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden slide-up">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-5">
+                <h3 class="font-bold text-base flex items-center gap-2">
+                    <span class="text-xl">🔑</span> Lupa Password?
+                </h3>
+                <p class="text-xs text-blue-100 mt-1">Hubungi administrator untuk reset password</p>
+            </div>
+            <div class="p-5 space-y-3">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3">
+                    <p class="text-xs text-blue-800 font-medium">📧 Email Administrator:</p>
+                    <p class="text-sm text-blue-600 font-bold mt-1">admin@beasiswa.ac.id</p>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 rounded-xl p-3">
+                    <p class="text-xs text-slate-600 font-medium">📞 Kontak:</p>
+                    <p class="text-sm text-slate-700 font-bold mt-1">(021) 123-4567</p>
+                </div>
+            </div>
+            <div class="p-4 bg-slate-50 border-t flex justify-end">
+                <button onclick="closeForgotPassword()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-semibold transition cursor-pointer">
+                    Tutup
+                </button>
             </div>
         </div>
     </div>
 
+    <!-- Toast Notification -->
+    <div id="toast" class="opacity-0 pointer-events-none fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-2 z-50 flex items-center gap-2">
+        <span id="toast-icon">ℹ️</span>
+        <span id="toast-text">Pesan Notifikasi</span>
+    </div>
+
     <script>
-        function handleLogin(event) {
-            event.preventDefault(); // Mencegah refresh halaman saat submit
+        // ===== CHECK ERROR FROM URL =====
+        const errorBox = document.getElementById('error-box');
+        const params = new URLSearchParams(window.location.search);
 
-            const usernameInp = document.getElementById('username').value;
-            const passwordInp = document.getElementById('password').value;
-            const roleInp = document.getElementById('role').value;
-            const errorBox = document.getElementById('error-box');
+        // ===== ACCOUNT DATA STATIC =====
+        const accounts = {
+            mahasiswa: { username: '22010101', password: '22010101', dashboard: 'dashboard-mahasiswa.html' },
+            verifikator: { username: 'verifikator123', password: 'verifikator123', dashboard: 'dashboard-verifikator.html' },
+            admin: { username: 'admin', password: 'admin123', dashboard: 'dashboard-admin.html' }
+        };
 
-            // Menyembunyikan error box setiap kali tombol submit ditekan ulang
-            errorBox.classList.add('hidden');
+        // Load custom accounts from localStorage and merge when checking login
+        function getAllAccounts() {
+            const all = [];
+            for (const r in accounts) {
+                all.push({ role: r, username: accounts[r].username, password: accounts[r].password, dashboard: accounts[r].dashboard });
+            }
+            try {
+                const raw = localStorage.getItem('customAccounts');
+                if (raw) {
+                    const custom = JSON.parse(raw);
+                    if (Array.isArray(custom)) {
+                        custom.forEach(c => {
+                            const dashboard = c.dashboard || (c.role === 'mahasiswa' ? 'dashboard-mahasiswa.html' : (c.role === 'verifikator' ? 'dashboard-verifikator.html' : 'dashboard-admin.html'));
+                            all.push({ role: c.role, username: c.username, password: c.password, dashboard });
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('Gagal membaca customAccounts dari localStorage', e);
+            }
+            return all;
+        }
+        if (params.get('error') === '1') {
+            errorBox.classList.remove('hidden');
+            const errorMsg = params.get('msg');
+            if (errorMsg) {
+                document.getElementById('error-message').innerText = decodeURIComponent(errorMsg);
+            }
+            const card = document.querySelector('.glass-card');
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 500);
+        }
 
-            // Logika Validasi Login (Sudah Diperbaiki)
-            if (roleInp === 'mahasiswa' && usernameInp === '22010101' && passwordInp === '22010101') {
-                window.location.href = "dashboard-mahasiswa.html";
-            } else if (roleInp === 'verifikator' && usernameInp === 'verifikator123' && passwordInp === 'verifikator123') { // <-- Diperbaiki di sini
-                window.location.href = "dashboard-verifikator.html";
-            } else if (roleInp === 'admin' && usernameInp === 'admin' && passwordInp === 'admin123') {
-                window.location.href = "dashboard-admin.html";
+        if (params.get('registered') === '1') {
+            showToast('✅ Registrasi berhasil! Silakan login.');
+        }
+
+        // ===== ROLE SELECTION =====
+        function selectRole(role) {
+            document.getElementById('roleInput').value = role;
+            document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+            document.getElementById(`role-${role}`).classList.add('selected');
+        }
+
+        // ===== TOGGLE PASSWORD =====
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const eyeIcon = document.getElementById('eyeIcon');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerText = '🙈';
             } else {
-                // Tampilkan pesan error jika data tidak cocok
-                errorBox.classList.remove('hidden');
+                passwordInput.type = 'password';
+                eyeIcon.innerText = '👁️';
             }
         }
+
+        // ===== FILL DEMO =====
+        function fillDemo(username, password, role) {
+            document.getElementById('usernameInput').value = username;
+            document.getElementById('passwordInput').value = password;
+            selectRole(role);
+            showToast('✅', 'Kredensial demo telah diisi!');
+        }
+
+        // ===== FORGOT PASSWORD =====
+        function showForgotPassword(event) {
+            event.preventDefault();
+            document.getElementById('forgotModal').classList.remove('hidden');
+        }
+
+        function closeForgotPassword() {
+            document.getElementById('forgotModal').classList.add('hidden');
+        }
+
+        // ===== HANDLE LOGIN SUBMIT =====
+        async function handleLoginSubmit(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('usernameInput').value.trim();
+            const password = document.getElementById('passwordInput').value.trim();
+            const role = document.getElementById('roleInput').value;
+
+            if (!username || !password) {
+                showToast('⚠️', 'Username dan password harus diisi!');
+                return;
+            }
+
+            // Show loading
+            const submitBtn = document.getElementById('submitBtn');
+            const btnText = document.getElementById('btnText');
+            const btnSpinner = document.getElementById('btnSpinner');
+
+            submitBtn.disabled = true;
+            btnText.innerText = 'Memproses...';
+            btnSpinner.classList.remove('hidden');
+
+            // Save to remember me
+            if (document.getElementById('rememberMe').checked) {
+                localStorage.setItem('rememberedUsername', username);
+            } else {
+                localStorage.removeItem('rememberedUsername');
+            }
+
+            const form = new FormData();
+            form.append('username', username);
+            form.append('password', password);
+            form.append('role', role);
+
+            try {
+                const res = await fetch('login_process.php', {
+                    method: 'POST',
+                    body: form
+                });
+                const data = await res.json();
+                if (data.success) {
+                    sessionStorage.setItem('loggedUsername', username);
+                    sessionStorage.setItem('loggedRole', role);
+                    window.location.href = data.dashboard || 'dashboard-mahasiswa.html';
+                } else {
+                    errorBox.classList.remove('hidden');
+                    document.getElementById('error-message').innerText = data.message || 'Username, password, atau peran tidak cocok.';
+                    submitBtn.disabled = false;
+                    btnText.innerText = 'Masuk ke Sistem';
+                    btnSpinner.classList.add('hidden');
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('Terjadi kesalahan saat menghubungi server');
+                submitBtn.disabled = false;
+                btnText.innerText = 'Masuk ke Sistem';
+                btnSpinner.classList.add('hidden');
+            }
+        }
+
+        // ===== TOAST =====
+        function showToast(icon, message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-icon').innerText = icon;
+            document.getElementById('toast-text').innerText = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            }, 3000);
+        }
+
+        // ===== EVENT LISTENERS =====
+        document.getElementById('forgotModal').addEventListener('click', function(e) {
+            if (e.target === this) closeForgotPassword();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeForgotPassword();
+        });
+
+        // ===== REMEMBER ME =====
+        window.addEventListener('load', function() {
+            const remembered = localStorage.getItem('rememberedUsername');
+            if (remembered) {
+                document.getElementById('usernameInput').value = remembered;
+                document.getElementById('rememberMe').checked = true;
+            }
+        });
+
+        // ===== DEBUG INFO (bisa dihapus) =====
+        console.log('%c🎓 Portal Beasiswa v2.1', 'color: #3b82f6; font-size: 16px; font-weight: bold;');
+        console.log('📍 Current URL:', window.location.href);
     </script>
 </body>
 </html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Redirect</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            font-family: Inter, sans-serif;
+        }
+        .card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            backdrop-filter: blur(16px);
+            padding: 2rem;
+            text-align: center;
+            border-radius: 24px;
+            max-width: 420px;
+            width: 100%;
+        }
+        a {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Halaman Login Diperbarui</h1>
+        <p>Login sekarang menggunakan <strong>index.html</strong>.</p>
+        <p>Anda diarahkan kembali dalam beberapa detik.</p>
+        <p><a href="index.html">Klik di sini jika tidak otomatis</a></p>
+    </div>
+    <script>
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 900);
+    </script>
+</body>
+</html>

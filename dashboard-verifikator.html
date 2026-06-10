@@ -3,243 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Verifikator - Portal Beasiswa</title>
+    <title>Panel Verifikator Berkas</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
-<body class="bg-slate-100 min-h-screen font-sans">
+<body class="bg-slate-50">
 
-    <nav class="bg-amber-700 text-white p-4 flex justify-between items-center shadow-md fixed top-0 w-full z-40">
-        <h1 class="text-lg font-bold flex items-center gap-2">🔍 Panel Verifikator Berkas <span class="text-xs bg-amber-900 text-amber-200 px-2 py-0.5 rounded-md">v2.0 - Live DB</span></h1>
-        <div class="flex items-center gap-4">
-            <span class="text-sm font-medium bg-amber-800 px-3 py-1 rounded-lg">Petugas Seleksi</span>
-            <a href="index.html" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition font-semibold">Logout</a>
-        </div>
+    <nav class="bg-amber-700 text-white p-4 flex items-center justify-between">
+        <h1 class="text-lg font-bold">🔍 Panel Verifikator Berkas</h1>
+        <button onclick="doLogout()" class="text-sm underline">Logout</button>
     </nav>
 
-    <div class="max-w-6xl mx-auto p-6 pt-24">
+    <div class="max-w-6xl mx-auto p-6">
         
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-slate-400 font-bold uppercase">Total Antrean Masuk</p>
-                    <p id="count-total" class="text-2xl font-black text-slate-800 mt-1">0</p>
-                </div>
-                <span class="text-2xl">📥</span>
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="bg-white p-4 rounded shadow">
+                <p class="text-xs text-slate-400">Total Antrean</p>
+                <p id="count-total" class="text-2xl font-bold">0</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-slate-400 font-bold uppercase">Belum Diperiksa</p>
-                    <p id="count-pending" class="text-2xl font-black text-amber-600 mt-1">0</p>
-                </div>
-                <span class="text-2xl">⏳</span>
+            <div class="bg-white p-4 rounded shadow">
+                <p class="text-xs text-slate-400">Belum Diperiksa</p>
+                <p id="count-pending" class="text-2xl font-bold text-amber-600">0</p>
             </div>
-            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-slate-400 font-bold uppercase">Selesai Diproses</p>
-                    <p id="count-done" class="text-2xl font-black text-emerald-600 mt-1">0</p>
-                </div>
-                <span class="text-2xl">✅</span>
+            <div class="bg-white p-4 rounded shadow">
+                <p class="text-xs text-slate-400">Selesai</p>
+                <p id="count-done" class="text-2xl font-bold text-green-600">0</p>
             </div>
         </div>
 
-        <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
-            <button onclick="filterStatus('Semua')" id="btn-filter-Semua" class="px-4 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer transition">👥 Semua Berkas</button>
-            <button onclick="filterStatus('Belum Diperiksa')" id="btn-filter-Belum Diperiksa" class="px-4 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-50 transition">⏳ Belum Diperiksa</button>
-            <button onclick="filterStatus('Disetujui')" id="btn-filter-Disetujui" class="px-4 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-50 transition">✅ Disetujui</button>
-            <button onclick="filterStatus('Ditolak')" id="btn-filter-Ditolak" class="px-4 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-50 transition">❌ Ditolak</button>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-xs border border-slate-200 overflow-hidden">
-            <table class="w-full text-left border-collapse text-sm">
-                <thead>
-                    <tr class="bg-slate-50 text-slate-500 uppercase text-xs font-bold border-b border-slate-200">
-                        <th class="p-4">Nama Mahasiswa</th>
-                        <th class="p-4">Jenis Dokumen</th>
-                        <th class="p-4">Tanggal Unggah</th>
-                        <th class="p-4">Status Dokumen</th>
-                        <th class="p-4 text-center">Tindakan Validasi</th>
+        <div class="bg-white rounded shadow">
+            <table class="w-full">
+                <thead class="bg-slate-100">
+                    <tr>
+                        <th class="p-3 text-left">Nama</th>
+                        <th class="p-3 text-left">Dokumen</th>
+                        <th class="p-3 text-left">Tanggal</th>
+                        <th class="p-3">Status</th>
+                        <th class="p-3 text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody id="table-verifikator" class="divide-y divide-slate-100 text-slate-600">
-                    </tbody>
+                <tbody id="table-verifikator"></tbody>
             </table>
-            <div id="empty-state" class="hidden text-center py-12 bg-white">
-                <p class="text-slate-400 text-sm italic">Tidak ada dokumen dalam kategori ini.</p>
+            <div id="empty" class="hidden p-8 text-center text-slate-400">
+                Tidak ada dokumen
             </div>
         </div>
-    </div>
 
-    <div id="previewModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[85vh] flex flex-col overflow-hidden">
-            <div class="bg-slate-800 text-white p-4 flex justify-between items-center shadow-md">
-                <div>
-                    <h3 class="font-bold text-sm" id="preview-filename">Nama_File.pdf</h3>
-                    <p class="text-xs text-slate-400 mt-0.5">Pemilik: <span id="preview-owner" class="text-amber-400 font-medium">-</span></p>
-                </div>
-                <button onclick="closePreview()" class="text-slate-400 hover:text-white text-2xl cursor-pointer font-bold px-2">&times;</button>
-            </div>
-            <div class="flex-1 bg-slate-100 p-2">
-                <iframe id="pdfViewer" src="" class="w-full h-full rounded border border-slate-300 shadow-inner"></iframe>
-            </div>
-            <div class="bg-slate-50 p-3 border-t flex justify-end">
-                <button onclick="closePreview()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-medium cursor-pointer">Tutup Pratinjau</button>
-            </div>
+        <div class="mt-4 p-4 bg-blue-50 rounded">
+            <button onclick="forceSync()" class="bg-blue-600 text-white px-4 py-2 rounded">🔄 Sinkronisasi Manual</button>
+            <p class="text-xs text-slate-600 mt-2">Auto-refresh setiap 3 detik</p>
         </div>
-    </div>
-
-    <div id="toast" class="opacity-0 pointer-events-none fixed bottom-5 right-5 bg-slate-900 text-white text-xs font-medium px-4 py-3 rounded-lg shadow-xl transition-all duration-300 transform translate-y-2 z-50 flex items-center gap-2">
-        <span id="toast-icon">ℹ️</span> <span id="toast-text">Pesan Notifikasi</span>
     </div>
 
     <script>
-        // Data Default Sistem jika database di komputer pengembang masih kosong
-        const defaultBerkas = [
-            { id: 1, namaMhs: "Budi Santoso", nim: "22010101", jenis: "Transkrip_Nilai_Semester3.pdf", tanggal: "01 Juni 2026", status: "Belum Diperiksa" },
-            { id: 2, namaMhs: "Siti Rahma", nim: "22010102", jenis: "Surat_Keterangan_Tidak_Mampu.pdf", tanggal: "02 Juni 2026", status: "Belum Diperiksa" }
-        ];
+        // KEY YANG SAMA DENGAN ADMIN
+        const DB_KEY_VERIFIKATOR = 'portal_beasiswa_dokumen';
+        
+        let dokumenList = [];
 
-        let dokumenList = JSON.parse(localStorage.getItem('database_beasiswa')) || defaultBerkas;
-        let currentFilter = 'Semua';
-
-        window.onload = function() {
-            renderVerifikatorTable();
-        };
-
-        // Fungsi Render Data Utama
-        function renderVerifikatorTable() {
-            const tbody = document.getElementById('table-verifikator');
-            const emptyState = document.getElementById('empty-state');
-            tbody.innerHTML = '';
-
-            // Hitung dan Perbarui Kotak Counter Statistik
-            const total = dokumenList.length;
-            const pending = dokumenList.filter(d => d.status === "Belum Diperiksa").length;
-            const done = dokumenList.filter(d => d.status !== "Belum Diperiksa").length;
-
-            document.getElementById('count-total').innerText = total;
-            document.getElementById('count-pending').innerText = pending;
-            document.getElementById('count-done').innerText = done;
-
-            // Lakukan Penyaringan Data sesuai Tab Aktif
-            let filteredData = dokumenList;
-            if (currentFilter !== 'Semua') {
-                filteredData = dokumenList.filter(d => d.status === currentFilter);
-            }
-
-            // Cek Jika Hasil Filter Kosong
-            if (filteredData.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-            }
-
-            // Petakan Data ke Dalam Baris Tabel HTML
-            filteredData.forEach((doc) => {
-                let statusBadge = '';
-                if (doc.status === 'Belum Diperiksa') {
-                    statusBadge = `<span class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded text-xs font-semibold">⏳ Belum Diperiksa</span>`;
-                } else if (doc.status === 'Disetujui') {
-                    statusBadge = `<span class="bg-green-100 text-green-800 px-2.5 py-0.5 rounded text-xs font-semibold">✅ Disetujui</span>`;
-                } else if (doc.status === 'Ditolak') {
-                    statusBadge = `<span class="bg-red-100 text-red-800 px-2.5 py-0.5 rounded text-xs font-semibold">❌ Ditolak</span>`;
-                }
-
-                let actionButtons = '';
-                if (doc.status === 'Belum Diperiksa') {
-                    actionButtons = `
-                        <button onclick="updateStatus(${doc.id}, 'Disetujui')" class="bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow-xs cursor-pointer">Setujui</button>
-                        <button onclick="updateStatus(${doc.id}, 'Ditolak')" class="bg-red-500 hover:bg-red-600 text-white text-xs px-3 py-1.5 rounded-lg font-semibold transition shadow-xs cursor-pointer">Tolak</button>
-                    `;
-                } else {
-                    actionButtons = `
-                        <button onclick="updateStatus(${doc.id}, 'Belum Diperiksa')" class="text-slate-400 hover:text-amber-600 text-xs border border-slate-200 hover:border-amber-300 px-2.5 py-1 rounded-md transition cursor-pointer">Revisi Kembali</button>
-                    `;
-                }
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/70 transition">
-                        <td class="p-4">
-                            <p class="font-bold text-slate-800">${doc.namaMhs}</p>
-                            <p class="text-xs text-slate-400">NIM: ${doc.nim}</p>
-                        </td>
-                        <td class="p-4">
-                            <button onclick="viewDocument('${doc.jenis}', '${doc.namaMhs}')" class="text-amber-700 hover:text-amber-900 hover:underline font-semibold text-left flex items-center gap-1.5 cursor-pointer">
-                                📄 <span class="truncate max-w-[240px]">${doc.jenis}</span>
-                            </button>
-                        </td>
-                        <td class="p-4 text-slate-500 text-xs">${doc.tanggal}</td>
-                        <td class="p-4">${statusBadge}</td>
-                        <td class="p-4 text-center flex justify-center gap-2 items-center min-h-[65px]">${actionButtons}</td>
-                    </tr>
-                `;
-            });
-        }
-
-        // Fungsi Aksi Pengubah Status Dokumen (Disetujui/Ditolak)
-        function updateStatus(id, newStatus) {
-            let index = dokumenList.findIndex(d => d.id === id);
-            if(index !== -1) {
-                dokumenList[index].status = newStatus;
-                localStorage.setItem('database_beasiswa', JSON.stringify(dokumenList)); // kunci ke DB browser
-                renderVerifikatorTable();
-
-                // Munculkan alert toast kustom halus di pojok kanan bawah
-                if (newStatus === 'Disetujui') showToast('✅ Berkas Berhasil Disetujui!');
-                if (newStatus === 'Ditolak') showToast('❌ Berkas Telah Ditolak / Ditandai Revisi!');
-                if (newStatus === 'Belum Diperiksa') showToast('⏳ Berkas Dikembalikan ke Antrean Pemrosesan.');
+        function validateSession() {
+            const loggedRole = sessionStorage.getItem('loggedRole');
+            if (!loggedRole || loggedRole !== 'verifikator') {
+                window.location.href = 'index.html';
             }
         }
 
-        // Fungsi Mengontrol Filter Tab Atas
-        function filterStatus(statusKey) {
-            currentFilter = statusKey;
+        function doLogout() {
+            sessionStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // Load data saat halaman dibuka
+        window.addEventListener('load', () => {
+            validateSession();
+            console.log('🔍 Dashboard Verifikator loaded');
+            loadData();
+            renderTable();
             
-            // Atur gaya CSS tombol tab aktif & tidak aktif
-            const statuses = ['Semua', 'Belum Diperiksa', 'Disetujui', 'Ditolak'];
-            statuses.forEach(st => {
-                const btn = document.getElementById(`btn-filter-${st}`);
-                if (st === statusKey) {
-                    btn.className = "px-4 py-1.5 bg-slate-800 text-white rounded-lg text-xs font-semibold cursor-pointer transition shadow-xs";
-                } else {
-                    btn.className = "px-4 py-1.5 bg-white text-slate-600 border border-slate-200 rounded-lg text-xs font-semibold cursor-pointer hover:bg-slate-50 transition";
-                }
-            });
-
-            renderVerifikatorTable();
-        }
-
-        // Fungsi Manajemen Pratinjau Dokumen PDF
-        function viewDocument(filename, owner) {
-            document.getElementById('previewModal').classList.remove('hidden');
-            document.getElementById('preview-filename').innerText = filename;
-            document.getElementById('preview-owner').innerText = owner;
-            // Membuka PDF Online Contoh yang valid
-            document.getElementById('pdfViewer').src = "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-        }
-
-        function closePreview() {
-            document.getElementById('previewModal').classList.add('hidden');
-            document.getElementById('pdfViewer').src = "";
-        }
-
-        // Fungsi Menampilkan Toast Notification Otomatis Hilang dalam 3 Detik
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-text').innerText = message;
-            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
-            
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            // Auto-refresh setiap 3 detik
+            setInterval(() => {
+                loadData();
+                renderTable();
             }, 3000);
-        }
+        });
 
-        // Sinkronisasi data real-time ketika verifikator membuka ulang tab jendela browser ini
-        document.addEventListener("visibilitychange", function() {
-            if (!document.hidden) {
-                dokumenList = JSON.parse(localStorage.getItem('database_beasiswa')) || defaultBerkas;
-                renderVerifikatorTable();
+        // Listen perubahan dari tab lain
+        window.addEventListener('storage', (e) => {
+            if (e.key === DB_KEY_VERIFIKATOR) {
+                console.log('🔄 Data berubah dari tab lain');
+                loadData();
+                renderTable();
             }
         });
+
+        function loadData() {
+            dokumenList = JSON.parse(localStorage.getItem(DB_KEY_VERIFIKATOR)) || [];
+            console.log('✅ Loaded', dokumenList.length, 'dokumen');
+        }
+
+        function forceSync() {
+            loadData();
+            renderTable();
+            alert('✅ Sinkronisasi berhasil! Data: ' + dokumenList.length);
+        }
+        
+        function renderTable() {
+            const tbody = document.getElementById('table-verifikator');
+            const empty = document.getElementById('empty');
+            
+            if (dokumenList.length === 0) {
+                empty.classList.remove('hidden');
+                tbody.innerHTML = '';
+                updateStats();
+                return;
+            }
+            
+            empty.classList.add('hidden');
+            
+            tbody.innerHTML = dokumenList.map(doc => {
+                let statusBadge = '';
+                let buttons = '';
+                
+                if (doc.status === 'Belum Diperiksa') {
+                    statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs">⏳ Belum Diperiksa</span>';
+                    buttons = `
+                        <button onclick="updateStatus(${doc.id}, 'Disetujui')" class="bg-green-500 text-white px-3 py-1 rounded text-xs mr-1">Setujui</button>
+                        <button onclick="updateStatus(${doc.id}, 'Ditolak')" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Tolak</button>
+                    `;
+                } else if (doc.status === 'Disetujui') {
+                    statusBadge = '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">✅ Disetujui</span>';
+                    buttons = '<span class="text-slate-400 text-xs">Sudah diproses</span>';
+                } else {
+                    statusBadge = '<span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">❌ Ditolak</span>';
+                    buttons = '<span class="text-slate-400 text-xs">Sudah diproses</span>';
+                }
+                
+                return `
+                    <tr class="border-b">
+                        <td class="p-3">
+                            <div class="font-semibold">${doc.namaMhs}</div>
+                            <div class="text-xs text-slate-400">NIM: ${doc.nim}</div>
+                        </td>
+                        <td class="p-3 text-amber-700">📄 ${doc.jenis}</td>
+                        <td class="p-3 text-sm text-slate-600">${doc.tanggal}</td>
+                        <td class="p-3">${statusBadge}</td>
+                        <td class="p-3 text-center">${buttons}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            updateStats();
+        }
+
+        function updateStatus(id, newStatus) {
+            const doc = dokumenList.find(d => d.id === id);
+            if (doc) {
+                doc.status = newStatus;
+                localStorage.setItem(DB_KEY_VERIFIKATOR, JSON.stringify(dokumenList));
+                renderTable();
+                alert('✅ Status diubah menjadi: ' + newStatus);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('count-total').textContent = dokumenList.length;
+            document.getElementById('count-pending').textContent = dokumenList.filter(d => d.status === 'Belum Diperiksa').length;
+            document.getElementById('count-done').textContent = dokumenList.filter(d => d.status !== 'Belum Diperiksa').length;
+        }
     </script>
 </body>
 </html>

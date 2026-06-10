@@ -3,169 +3,992 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>Dashboard Mahasiswa - Portal Beasiswa</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); min-height: 100vh; }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.97);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .sidebar {
+            background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-item {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%);
+            border-left: 3px solid #3b82f6;
+            color: white !important;
+        }
+        
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .badge-pulse {
+            animation: badgePulse 2s infinite;
+        }
+        
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+        }
+
+        .slide-up {
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .toast-enter {
+            animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
+
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.open { transform: translateX(0); }
+            main { margin-left: 0 !important; }
+        }
+    </style>
 </head>
-<body class="bg-slate-50 min-h-screen">
+<body class="flex">
 
-    <!-- NAVBAR -->
-    <nav class="bg-indigo-600 text-white p-4 flex justify-between items-center shadow">
-        <h1 class="text-lg font-bold">🎓 Ruang Mahasiswa</h1>
-        <div class="flex items-center gap-4">
-            <span class="text-sm font-medium">Budi Santoso (NIM: 22010101)</span>
-            <a href="index.html" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-xs transition">Keluar</a>
-        </div>
-    </nav>
-
-    <div class="max-w-5xl mx-auto p-6">
-        <!-- Status Beasiswa Aktif -->
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 mb-6">
-            <h2 class="text-sm font-semibold text-slate-500 uppercase">Status Pengajuan Anda</h2>
-            <div class="flex flex-col md:flex-row md:items-center justify-between mt-3 gap-4">
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar w-64 min-h-screen fixed left-0 top-0 text-white p-6 flex flex-col z-40">
+        <div class="mb-8">
+            <div class="flex items-center gap-3 mb-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-xl">🎓</div>
                 <div>
-                    <h3 class="text-xl font-bold text-slate-800">Beasiswa Prestasi Unggul 2026</h3>
-                    <p class="text-sm text-slate-500 mt-1">Tahap: <span class="font-semibold text-yellow-600">Proses Verifikasi Berkas</span></p>
+                    <h1 class="font-bold text-lg leading-tight">Portal Beasiswa</h1>
+                    <p class="text-[10px] text-slate-400">Dashboard Mahasiswa</p>
                 </div>
-                <span class="bg-yellow-100 text-yellow-800 px-4 py-1.5 rounded-full text-xs font-bold self-start md:self-center">⏳ PENDING</span>
             </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Kiri: Daftar Kelengkapan Dokumen -->
-            <div class="md:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-slate-100">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-slate-800">Kelengkapan Berkas Pendaftaran</h3>
-                    <button onclick="openUploadModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg cursor-pointer font-medium transition">
-                        + Unggah Baru
+        <nav class="flex-1 space-y-1">
+            <a onclick="showSection('dashboard', this)" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
+                <span class="text-lg">📊</span> Dashboard
+            </a>
+            <a onclick="showSection('beasiswa', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
+                <span class="text-lg">🔍</span> Cari Beasiswa
+            </a>
+            <a onclick="showSection('aplikasi', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
+                <span class="text-lg">📝</span> Aplikasi Saya
+                <span id="badge-aplikasi" class="ml-auto bg-amber-500 text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+            </a>
+            <a onclick="showSection('dokumen', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
+                <span class="text-lg">📄</span> Dokumen
+            </a>
+            <a onclick="showSection('notifikasi', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
+                <span class="text-lg">🔔</span> Notifikasi
+                <span id="badge-notif" class="ml-auto bg-red-500 text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
+            </a>
+            <a onclick="showSection('profil', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
+                <span class="text-lg">👤</span> Profil Saya
+            </a>
+        </nav>
+
+        <div class="pt-6 border-t border-white/10">
+            <a onclick="doLogout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition cursor-pointer">
+                <span class="text-lg">⏻</span> Logout
+            </a>
+        </div>
+    </aside>
+
+    <!-- MOBILE MENU BUTTON -->
+    <button onclick="toggleSidebar()" class="md:hidden fixed top-4 left-4 z-50 bg-blue-500 text-white p-2 rounded-xl shadow-lg">
+        ☰
+    </button>
+
+    <!-- MAIN CONTENT -->
+    <main class="flex-1 ml-64 p-6 md:p-8">
+        
+        <!-- HEADER -->
+        <header class="flex justify-between items-center mb-8 fade-in">
+            <div>
+                <h2 class="text-2xl font-bold text-white mb-1">Selamat Datang, <span id="nama-mahasiswa">Mahasiswa</span>! 👋</h2>
+                <p class="text-slate-400 text-sm">NIM: <span id="nim-mahasiswa">-</span> • Teknik Informatika</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button onclick="showSection('notifikasi', document.querySelectorAll('.nav-item')[4])" class="relative p-2 bg-white/10 rounded-xl hover:bg-white/20 transition">
+                    <span class="text-xl">🔔</span>
+                    <span id="header-notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
+                </button>
+                <div id="header-avatar" class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold">
+                    M
+                </div>
+            </div>
+        </header>
+
+        <!-- SECTION: DASHBOARD -->
+        <section id="section-dashboard" class="fade-in space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="stat-card glass-card p-5 rounded-2xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📝</div>
+                        <span class="text-xs text-slate-400 font-medium">Total Daftar</span>
+                    </div>
+                    <p id="count-total" class="text-3xl font-black text-slate-800">0</p>
+                    <p class="text-xs text-slate-400 mt-1">Beasiswa diajukan</p>
+                </div>
+                
+                <div class="stat-card glass-card p-5 rounded-2xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-2xl badge-pulse">⏳</div>
+                        <span class="text-xs text-slate-400 font-medium">Proses</span>
+                    </div>
+                    <p id="count-proses" class="text-3xl font-black text-amber-600">0</p>
+                    <p class="text-xs text-slate-400 mt-1">Sedang diverifikasi</p>
+                </div>
+                
+                <div class="stat-card glass-card p-5 rounded-2xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-2xl">✅</div>
+                        <span class="text-xs text-slate-400 font-medium">Diterima</span>
+                    </div>
+                    <p id="count-diterima" class="text-3xl font-black text-emerald-600">0</p>
+                    <p class="text-xs text-slate-400 mt-1">Beasiswa disetujui</p>
+                </div>
+                
+                <div class="stat-card glass-card p-5 rounded-2xl">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">💰</div>
+                        <span class="text-xs text-slate-400 font-medium">Total Dana</span>
+                    </div>
+                    <p id="count-dana" class="text-2xl font-black text-purple-600">Rp 0</p>
+                    <p class="text-xs text-slate-400 mt-1">Dana yang diterima</p>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">Aplikasi Berjalan</h3>
+                    <a onclick="showSection('aplikasi', document.querySelectorAll('.nav-item')[2])" class="text-sm text-blue-500 hover:text-blue-600 font-semibold cursor-pointer">Lihat Semua →</a>
+                </div>
+                <div id="active-applications" class="space-y-4"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onclick="showSection('beasiswa', document.querySelectorAll('.nav-item')[1])" class="glass-card p-6 rounded-2xl text-left hover:shadow-xl transition group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">🔍</div>
+                    <h4 class="font-bold text-slate-800 mb-1">Cari Beasiswa</h4>
+                    <p class="text-xs text-slate-400">Temukan beasiswa yang sesuai dengan profil Anda</p>
+                </button>
+                
+                <button onclick="showSection('dokumen', document.querySelectorAll('.nav-item')[3])" class="glass-card p-6 rounded-2xl text-left hover:shadow-xl transition group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">📄</div>
+                    <h4 class="font-bold text-slate-800 mb-1">Upload Dokumen</h4>
+                    <p class="text-xs text-slate-400">Lengkapi berkas persyaratan beasiswa</p>
+                </button>
+                
+                <button onclick="showSection('profil', document.querySelectorAll('.nav-item')[5])" class="glass-card p-6 rounded-2xl text-left hover:shadow-xl transition group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">👤</div>
+                    <h4 class="font-bold text-slate-800 mb-1">Update Profil</h4>
+                    <p class="text-xs text-slate-400">Perbarui data diri dan prestasi Anda</p>
+                </button>
+            </div>
+        </section>
+
+        <!-- SECTION: PENCARIAN BEASISWA -->
+        <section id="section-beasiswa" class="hidden fade-in space-y-6">
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-4">🔍 Cari Beasiswa</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Kata Kunci</label>
+                        <input type="text" id="searchKeyword" placeholder="Cari beasiswa..." onkeyup="renderBeasiswaResults()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Jenis</label>
+                        <select id="filterJenis" onchange="renderBeasiswaResults()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                            <option value="">Semua Jenis</option>
+                            <option value="prestasi">Prestasi</option>
+                            <option value="bidikmisi">Bidikmisi</option>
+                            <option value="talenta">Talenta</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Nominal</label>
+                        <select id="filterNominal" onchange="renderBeasiswaResults()" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                            <option value="">Semua Nominal</option>
+                            <option value="1-5">< Rp 5 Juta</option>
+                            <option value="5-10">Rp 5-10 Juta</option>
+                            <option value="10+">> Rp 10 Juta</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button onclick="renderBeasiswaResults()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-xl text-sm transition">
+                            🔍 Cari
+                        </button>
+                    </div>
+                </div>
+
+                <div id="beasiswa-results" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: APLIKASI SAYA -->
+        <section id="section-aplikasi" class="hidden fade-in space-y-6">
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-6">📝 Aplikasi Beasiswa Saya</h3>
+                <div class="space-y-4" id="aplikasi-list"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: DOKUMEN -->
+        <section id="section-dokumen" class="hidden fade-in space-y-6">
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">📄 Dokumen Saya</h3>
+                    <button onclick="showUploadModal()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl text-sm transition">
+                        + Upload Dokumen
                     </button>
                 </div>
-                <div id="berkas-container" class="divide-y divide-slate-100">
-                    <!-- Data berkas di-render oleh JavaScript -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="dokumen-list"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: NOTIFIKASI -->
+        <section id="section-notifikasi" class="hidden fade-in space-y-6">
+            <div class="glass-card rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-lg font-bold text-slate-800">🔔 Notifikasi</h3>
+                    <button onclick="markAllRead()" class="text-sm text-blue-500 hover:text-blue-600 font-semibold">Tandai Semua Dibaca</button>
+                </div>
+                <div class="space-y-3" id="notifikasi-list"></div>
+            </div>
+        </section>
+
+        <!-- SECTION: PROFIL -->
+        <section id="section-profil" class="hidden fade-in space-y-6">
+            <div class="glass-card rounded-2xl p-6">
+                <h3 class="text-lg font-bold text-slate-800 mb-6">👤 Profil Saya</h3>
+                
+                <div class="flex items-center gap-6 mb-8">
+                    <div id="profile-avatar" class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white">
+                        M
+                    </div>
+                    <div>
+                        <h4 id="profile-name" class="text-xl font-bold text-slate-800">-</h4>
+                        <p id="profile-nim" class="text-slate-400 text-sm">NIM: -</p>
+                        <p class="text-slate-400 text-sm">Teknik Informatika • Semester 5</p>
+                    </div>
+                </div>
+                
+                <form class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="event.preventDefault(); saveProfile();">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Nama Lengkap</label>
+                        <input type="text" id="profile-input-nama" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">NIM</label>
+                        <input type="text" id="profile-input-nim" disabled class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Email</label>
+                        <input type="email" id="profile-input-email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">No. Telepon</label>
+                        <input type="tel" id="profile-input-phone" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">IPK</label>
+                        <input type="text" id="profile-input-ipk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Jurusan</label>
+                        <input type="text" value="Teknik Informatika" disabled class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-400">
+                    </div>
+                    <div class="md:col-span-2">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl text-sm transition">
+                            💾 Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- UPLOAD MODAL -->
+    <div id="uploadModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden slide-up">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-5">
+                <h3 class="font-bold text-base">📄 Upload Dokumen</h3>
+                <p class="text-xs text-blue-100 mt-1">Unggah dokumen persyaratan beasiswa</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Jenis Dokumen</label>
+                    <select id="uploadJenis" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
+                        <option value="">Pilih Jenis Dokumen</option>
+                        <option value="Transkrip Nilai">Transkrip Nilai</option>
+                        <option value="Kartu Tanda Mahasiswa">Kartu Tanda Mahasiswa</option>
+                        <option value="Kartu Keluarga">Kartu Keluarga</option>
+                        <option value="Sertifikat Prestasi">Sertifikat Prestasi</option>
+                        <option value="Surat Keterangan Tidak Mampu">SKTM</option>
+                        <option value="Lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">File Dokumen</label>
+                    <div onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-blue-400 transition cursor-pointer">
+                        <div class="text-3xl mb-2">📎</div>
+                        <p id="fileLabel" class="text-sm text-slate-600 font-medium">Klik untuk pilih file</p>
+                        <p class="text-xs text-slate-400 mt-1">PDF, JPG, PNG (Max 5MB)</p>
+                        <input type="file" id="fileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
+                    </div>
                 </div>
             </div>
-
-            <!-- Kanan: Estimasi Pencarian Dana -->
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 h-fit">
-                <h3 class="font-bold text-slate-800 mb-4">Informasi Dana</h3>
-                <div class="bg-slate-50 p-4 rounded-lg mb-3">
-                    <p class="text-xs text-slate-500">Nominal Beasiswa</p>
-                    <p class="text-lg font-bold text-slate-800">Rp 5.000.000</p>
-                </div>
-                <div class="bg-slate-50 p-4 rounded-lg">
-                    <p class="text-xs text-slate-500">Rekening Tujuan</p>
-                    <p class="text-sm font-semibold text-slate-700">Bank Mandiri — ****8921</p>
-                </div>
+            <div class="p-4 bg-slate-50 border-t flex justify-end gap-2">
+                <button onclick="closeUploadModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-xl text-xs font-semibold transition">Batal</button>
+                <button onclick="confirmUpload()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-semibold transition">Upload</button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL FORM POPUP -->
-    <div id="uploadModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
-            <div class="bg-indigo-600 text-white p-4"><h3 class="font-bold text-lg">📁 Unggah Dokumen Baru</h3></div>
-            <form id="uploadForm" onsubmit="handleUploadSubmit(event)" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Nama / Jenis Dokumen</label>
-                    <input type="text" id="document-name" placeholder="Contoh: Surat Rekomendasi Dosen" required class="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:outline-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1 uppercase">Pilih File (Simulasi PDF)</label>
-                    <input type="file" id="file-input" accept=".pdf" required class="w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
-                    <button type="button" onclick="closeUploadModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium">Batal</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-medium">Kirim Berkas</button>
-                </div>
-            </form>
-        </div>
-    </div>
+    <!-- TOAST CONTAINER -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-[80] space-y-2"></div>
 
     <script>
-        // DATA AWAL DEFAULT (Jika database di browser masih kosong)
-        const defaultBerkas = [
-            { id: 1, namaMhs: "Budi Santoso", nim: "22010101", jenis: "Transkrip_Nilai_Semester3.pdf", tanggal: "01 Juni 2026", status: "Belum Diperiksa" },
-            { id: 2, namaMhs: "Siti Rahma", nim: "22010102", jenis: "Surat_Keterangan_Tidak_Mampu.pdf", tanggal: "02 Juni 2026", status: "Belum Diperiksa" }
-        ];
-
-        // Ambil data dari Database Browser (localStorage)
-        let dokumenList = JSON.parse(localStorage.getItem('database_beasiswa')) || defaultBerkas;
-
-        window.onload = function() {
-            renderBerkas();
-        };
-
-        function renderBerkas() {
-            const container = document.getElementById('berkas-container');
-            container.innerHTML = '';
-
-            // Filter dokumen khusus milik Budi Santoso (Mahasiswa yang sedang login)
-            let berkasMhs = dokumenList.filter(d => d.nim === "22010101");
-
-            if(berkasMhs.length === 0) {
-                container.innerHTML = `<p class="text-sm text-slate-400 italic py-4">Belum ada berkas yang diunggah.</p>`;
+        // ===== SESSION VALIDATION =====
+        window.addEventListener('load', function() {
+            const loggedRole = sessionStorage.getItem('loggedRole');
+            const loggedUsername = sessionStorage.getItem('loggedUsername');
+            
+            if (!loggedRole || loggedRole !== 'mahasiswa') {
+                window.location.href = 'index.html';
                 return;
             }
+            
+            // Update user info
+            const nama = loggedUsername.charAt(0).toUpperCase() + loggedUsername.slice(1);
+            document.getElementById('nama-mahasiswa').innerText = nama;
+            document.getElementById('nim-mahasiswa').innerText = loggedUsername;
+            document.getElementById('profile-name').innerText = nama;
+            document.getElementById('profile-nim').innerText = 'NIM: ' + loggedUsername;
+            document.getElementById('profile-input-nama').value = nama;
+            document.getElementById('profile-input-nim').value = loggedUsername;
+            document.getElementById('profile-input-email').value = loggedUsername + '@student.univ.ac.id';
+            document.getElementById('profile-input-phone').value = '08' + loggedUsername;
+            document.getElementById('profile-input-ipk').value = '3.75';
+            
+            const initials = nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.getElementById('header-avatar').innerText = initials;
+            document.getElementById('profile-avatar').innerText = initials;
+            
+            // Load data
+            loadData();
+        });
 
-            berkasMhs.forEach((item) => {
-                let statusColor = 'text-yellow-600';
-                if (item.status === 'Disetujui') statusColor = 'text-green-600';
-                if (item.status === 'Ditolak') statusColor = 'text-red-500';
+        // ===== DATA MANAGEMENT =====
+        let beasiswaData = JSON.parse(localStorage.getItem('beasiswa_list')) || [
+            { id: 1, nama: 'Beasiswa Prestasi Akademik 2026', jenis: 'prestasi', nominal: 10000000, deadline: '2026-06-30', kuota: 50, tersisa: 23, deskripsi: 'Beasiswa untuk mahasiswa berprestasi dengan IPK minimal 3.5' },
+            { id: 2, nama: 'Beasiswa Bantuan Biaya Hidup', jenis: 'bidikmisi', nominal: 5000000, deadline: '2026-07-15', kuota: 100, tersisa: 67, deskripsi: 'Bantuan biaya hidup untuk mahasiswa kurang mampu' },
+            { id: 3, nama: 'Beasiswa Talenta Olahraga', jenis: 'talenta', nominal: 7500000, deadline: '2026-06-25', kuota: 20, tersisa: 8, deskripsi: 'Beasiswa untuk atlet berprestasi tingkat nasional' },
+            { id: 4, nama: 'Beasiswa Penelitian Inovasi', jenis: 'prestasi', nominal: 15000000, deadline: '2026-08-01', kuota: 15, tersisa: 12, deskripsi: 'Beasiswa untuk mahasiswa yang melakukan penelitian inovatif' },
+            { id: 5, nama: 'Beasiswa Seni & Budaya', jenis: 'talenta', nominal: 6000000, deadline: '2026-07-20', kuota: 25, tersisa: 15, deskripsi: 'Beasiswa untuk mahasiswa berprestasi di bidang seni dan budaya' }
+        ];
 
-                container.innerHTML += `
-                    <div class="py-3 flex justify-between items-center text-sm hover:bg-slate-50/50 px-2 rounded-lg transition">
-                        <div>
-                            <p class="font-medium text-slate-700">${item.jenis}</p>
-                            <p class="text-xs text-slate-400">Diunggah pada: ${item.tanggal}</p>
+        let aplikasiData = JSON.parse(localStorage.getItem('aplikasi_mahasiswa')) || [
+            { id: 1, beasiswaId: 1, status: 'Verifikasi', tanggal: '2026-06-01', progress: 75, catatan: '' },
+            { id: 2, beasiswaId: 2, status: 'Review Admin', tanggal: '2026-05-28', progress: 90, catatan: '' }
+        ];
+
+        let dokumenData = JSON.parse(localStorage.getItem('dokumen_mahasiswa')) || [
+            { id: 1, jenis: 'Transkrip Nilai', nama: 'transkrip_semester_4.pdf', tanggal: '2026-06-01', status: 'Disetujui' },
+            { id: 2, jenis: 'Kartu Tanda Mahasiswa', nama: 'ktm_2026.jpg', tanggal: '2026-06-01', status: 'Disetujui' },
+            { id: 3, jenis: 'Kartu Keluarga', nama: 'kartu_keluarga.pdf', tanggal: '2026-05-28', status: 'Disetujui' },
+            { id: 4, jenis: 'Sertifikat Prestasi', nama: 'sertifikat_lomba.pdf', tanggal: '2026-05-25', status: 'Revisi' }
+        ];
+
+        let notifikasiData = JSON.parse(localStorage.getItem('notifikasi_mahasiswa')) || [
+            { id: 1, judul: 'Dokumen Disetujui', pesan: 'Transkrip Nilai Anda telah disetujui oleh verifikator', waktu: '2 jam yang lalu', dibaca: false, icon: '✅' },
+            { id: 2, judul: 'Beasiswa Diterima', pesan: 'Selamat! Anda diterima di Beasiswa Prestasi Akademik 2026', waktu: '1 hari yang lalu', dibaca: false, icon: '🎉' },
+            { id: 3, judul: 'Revisi Dokumen', pesan: 'Sertifikat Prestasi perlu direvisi - mohon upload ulang', waktu: '3 hari yang lalu', dibaca: false, icon: '⚠️' },
+            { id: 4, judul: 'Deadline Mendekat', pesan: 'Beasiswa Talenta Olahraga tutup dalam 5 hari', waktu: '5 hari yang lalu', dibaca: true, icon: '⏰' }
+        ];
+
+        function saveData() {
+            localStorage.setItem('beasiswa_list', JSON.stringify(beasiswaData));
+            localStorage.setItem('aplikasi_mahasiswa', JSON.stringify(aplikasiData));
+            localStorage.setItem('dokumen_mahasiswa', JSON.stringify(dokumenData));
+            localStorage.setItem('notifikasi_mahasiswa', JSON.stringify(notifikasiData));
+        }
+
+        function loadData() {
+            updateStats();
+            renderActiveApplications();
+            renderBeasiswaResults();
+            renderAplikasiList();
+            renderDokumenList();
+            renderNotifikasiList();
+            updateBadges();
+        }
+
+        // ===== NAVIGATION =====
+        function showSection(sectionName, navElement) {
+            document.querySelectorAll('main > section').forEach(section => {
+                section.classList.add('hidden');
+            });
+            
+            const targetSection = document.getElementById(`section-${sectionName}`);
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                item.classList.add('text-slate-300');
+            });
+            
+            if (navElement) {
+                navElement.classList.add('active');
+                navElement.classList.remove('text-slate-300');
+            }
+
+            // Close mobile sidebar
+            document.getElementById('sidebar').classList.remove('open');
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // ===== STATS =====
+        function updateStats() {
+            const total = aplikasiData.length;
+            const proses = aplikasiData.filter(a => a.status === 'Verifikasi' || a.status === 'Review Admin').length;
+            const diterima = aplikasiData.filter(a => a.status === 'Disetujui').length;
+            
+            let totalDana = 0;
+            aplikasiData.filter(a => a.status === 'Disetujui').forEach(a => {
+                const b = beasiswaData.find(bs => bs.id === a.beasiswaId);
+                if (b) totalDana += b.nominal;
+            });
+
+            animateCounter('count-total', total);
+            animateCounter('count-proses', proses);
+            animateCounter('count-diterima', diterima);
+            document.getElementById('count-dana').innerText = 'Rp ' + (totalDana / 1000000).toFixed(0) + 'jt';
+        }
+
+        function animateCounter(elementId, target) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            
+            let current = 0;
+            const increment = Math.max(1, target / 20);
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.innerText = target;
+                    clearInterval(timer);
+                } else {
+                    element.innerText = Math.floor(current);
+                }
+            }, 40);
+        }
+
+        // ===== ACTIVE APPLICATIONS (Dashboard) =====
+        function renderActiveApplications() {
+            const container = document.getElementById('active-applications');
+            const active = aplikasiData.filter(a => a.status !== 'Disetujui' && a.status !== 'Ditolak').slice(0, 3);
+            
+            if (active.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <div class="text-4xl mb-2">📭</div>
+                        <p class="text-slate-400 text-sm">Belum ada aplikasi berjalan</p>
+                        <button onclick="showSection('beasiswa', document.querySelectorAll('.nav-item')[1])" class="mt-3 text-blue-500 hover:text-blue-600 text-sm font-semibold">
+                            Cari Beasiswa →
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = active.map(a => {
+                const b = beasiswaData.find(bs => bs.id === a.beasiswaId);
+                if (!b) return '';
+                
+                let statusColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                let statusText = 'Verifikasi';
+                if (a.status === 'Review Admin') {
+                    statusColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                    statusText = 'Review Admin';
+                }
+                
+                return `
+                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📚</div>
+                        <div class="flex-1">
+                            <h4 class="font-bold text-slate-800 text-sm">${b.nama}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5">Diajukan: ${formatDate(a.tanggal)}</p>
                         </div>
-                        <div class="flex items-center gap-4">
-                            <span class="${statusColor} text-xs font-semibold">
-                                ${item.status === 'Belum Diperiksa' ? '⏳ Menunggu Verifikasi' : item.status === 'Disetujui' ? '✅ Disetujui' : '❌ Ditolak'}
+                        <div class="text-right">
+                            <span class="inline-flex items-center gap-1 ${statusColor} px-3 py-1 rounded-lg text-xs font-bold border">
+                                <span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></span>
+                                ${statusText}
                             </span>
-                            <button onclick="deleteBerkas(${item.id})" class="text-red-400 hover:text-red-600 text-xs cursor-pointer">Hapus</button>
+                            <p class="text-[10px] text-slate-400 mt-1">${a.progress}% selesai</p>
                         </div>
                     </div>
                 `;
+            }).join('');
+        }
+
+        // ===== PENCARIAN BEASISWA =====
+        function renderBeasiswaResults() {
+            const keyword = document.getElementById('searchKeyword').value.toLowerCase();
+            const jenisFilter = document.getElementById('filterJenis').value;
+            const nominalFilter = document.getElementById('filterNominal').value;
+            
+            let filtered = beasiswaData.filter(b => {
+                const matchKeyword = !keyword || b.nama.toLowerCase().includes(keyword) || b.deskripsi.toLowerCase().includes(keyword);
+                const matchJenis = !jenisFilter || b.jenis === jenisFilter;
+                
+                let matchNominal = true;
+                if (nominalFilter === '1-5') matchNominal = b.nominal < 5000000;
+                else if (nominalFilter === '5-10') matchNominal = b.nominal >= 5000000 && b.nominal <= 10000000;
+                else if (nominalFilter === '10+') matchNominal = b.nominal > 10000000;
+                
+                return matchKeyword && matchJenis && matchNominal;
             });
+            
+            const container = document.getElementById('beasiswa-results');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-5xl mb-3">🔍</div>
+                        <p class="text-slate-400 text-sm">Tidak ada beasiswa yang ditemukan</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filtered.map(b => {
+                const alreadyApplied = aplikasiData.some(a => a.beasiswaId === b.id);
+                
+                return `
+                    <div class="p-5 bg-gradient-to-br from-slate-50 to-white rounded-xl border border-slate-200 hover:shadow-lg transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex-1">
+                                <h4 class="font-bold text-slate-800 mb-1">${b.nama}</h4>
+                                <p class="text-xs text-slate-500">${b.deskripsi}</p>
+                            </div>
+                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold capitalize ml-2">${b.jenis}</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-3 gap-3 mb-4">
+                            <div class="bg-white p-2 rounded-lg border border-slate-100">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">Nominal</p>
+                                <p class="text-sm font-bold text-emerald-600">Rp ${(b.nominal/1000000).toFixed(0)}jt</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-slate-100">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">Kuota</p>
+                                <p class="text-sm font-bold text-blue-600">${b.tersisa}/${b.kuota}</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-slate-100">
+                                <p class="text-[10px] text-slate-400 uppercase font-bold">Deadline</p>
+                                <p class="text-sm font-bold text-red-600">${formatDate(b.deadline)}</p>
+                            </div>
+                        </div>
+                        
+                        <button onclick="daftarBeasiswa(${b.id})" 
+                            class="w-full ${alreadyApplied ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white font-bold py-2.5 rounded-xl text-sm transition"
+                            ${alreadyApplied ? 'disabled' : ''}>
+                            ${alreadyApplied ? '✓ Sudah Mendaftar' : '📝 Daftar Sekarang'}
+                        </button>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function openUploadModal() { document.getElementById('uploadModal').classList.remove('hidden'); }
-        function closeUploadModal() { document.getElementById('uploadModal').classList.add('hidden'); document.getElementById('uploadForm').reset(); }
-
-        function handleUploadSubmit(event) {
-            event.preventDefault();
-            const docName = document.getElementById('document-name').value;
-            const fileInput = document.getElementById('file-input');
-            let rawFileName = fileInput.files[0] ? fileInput.files[0].name : "dokumen.pdf";
-
-            // Tambah data baru ke struktur database global
-            const dataBaru = {
-                id: Date.now(), // ID Unik berbasis waktu
-                namaMhs: "Budi Santoso",
-                nim: "22010101",
-                jenis: docName + " (" + rawFileName + ")",
-                tanggal: "02 Juni 2026",
-                status: "Belum Diperiksa"
-            };
-
-            dokumenList.push(dataBaru);
-            simpanKeDatabase();
-            closeUploadModal();
-            renderBerkas();
-            alert("Sukses! Berkas tersimpan di database lokal.");
-        }
-
-        function deleteBerkas(id) {
-            if (confirm("Hapus dokumen ini?")) {
-                dokumenList = dokumenList.filter(d => d.id !== id);
-                simpanKeDatabase();
-                renderBerkas();
+        function daftarBeasiswa(beasiswaId) {
+            const beasiswa = beasiswaData.find(b => b.id === beasiswaId);
+            if (!beasiswa) return;
+            
+            if (aplikasiData.some(a => a.beasiswaId === beasiswaId)) {
+                showToast('⚠️', 'Anda sudah mendaftar beasiswa ini!');
+                return;
+            }
+            
+            if (confirm(`Yakin ingin mendaftar ${beasiswa.nama}?`)) {
+                const newAplikasi = {
+                    id: Date.now(),
+                    beasiswaId: beasiswaId,
+                    status: 'Verifikasi',
+                    tanggal: new Date().toISOString().split('T')[0],
+                    progress: 10,
+                    catatan: ''
+                };
+                
+                aplikasiData.unshift(newAplikasi);
+                
+                // Add notification
+                notifikasiData.unshift({
+                    id: Date.now(),
+                    judul: 'Pendaftaran Berhasil',
+                    pesan: `Anda berhasil mendaftar ${beasiswa.nama}`,
+                    waktu: 'Baru saja',
+                    dibaca: false,
+                    icon: '📝'
+                });
+                
+                saveData();
+                loadData();
+                showToast('✅', 'Berhasil mendaftar beasiswa!');
             }
         }
 
-        // Fungsi menyimpan array ke localStorage browser
-        function simpanKeDatabase() {
-            localStorage.setItem('database_beasiswa', JSON.stringify(dokumenList));
+        // ===== APLIKASI SAYA =====
+        function renderAplikasiList() {
+            const container = document.getElementById('aplikasi-list');
+            
+            if (aplikasiData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-5xl mb-3">📭</div>
+                        <p class="text-slate-400 text-sm">Belum ada aplikasi beasiswa</p>
+                        <button onclick="showSection('beasiswa', document.querySelectorAll('.nav-item')[1])" class="mt-3 text-blue-500 hover:text-blue-600 text-sm font-semibold">
+                            Cari Beasiswa →
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = aplikasiData.map(a => {
+                const b = beasiswaData.find(bs => bs.id === a.beasiswaId);
+                if (!b) return '';
+                
+                let statusColor = 'bg-amber-50 text-amber-700 border-amber-200';
+                if (a.status === 'Disetujui') statusColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+                if (a.status === 'Ditolak') statusColor = 'bg-red-50 text-red-700 border-red-200';
+                if (a.status === 'Review Admin') statusColor = 'bg-blue-50 text-blue-700 border-blue-200';
+                
+                let progressColor = 'from-blue-400 to-blue-600';
+                if (a.status === 'Disetujui') progressColor = 'from-emerald-400 to-emerald-600';
+                if (a.status === 'Ditolak') progressColor = 'from-red-400 to-red-600';
+                
+                return `
+                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📚</div>
+                                <div>
+                                    <h4 class="font-bold text-slate-800">${b.nama}</h4>
+                                    <p class="text-xs text-slate-400">Diajukan: ${formatDate(a.tanggal)}</p>
+                                </div>
+                            </div>
+                            <span class="${statusColor} px-3 py-1 rounded-lg text-xs font-bold border">
+                                ${a.status}
+                            </span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-slate-400">Progress</span>
+                                <span class="font-bold text-slate-600">${a.progress}%</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
+                                <div class="h-full bg-gradient-to-r ${progressColor} rounded-full transition-all duration-500" 
+                                     style="width: ${a.progress}%"></div>
+                            </div>
+                        </div>
+                        
+                        ${a.catatan ? `<p class="text-xs text-slate-500 bg-white p-2 rounded-lg border border-slate-100">📝 ${a.catatan}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
         }
+
+        // ===== DOKUMEN =====
+        function renderDokumenList() {
+            const container = document.getElementById('dokumen-list');
+            
+            if (dokumenData.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-2 text-center py-12">
+                        <div class="text-5xl mb-3">📄</div>
+                        <p class="text-slate-400 text-sm">Belum ada dokumen diupload</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = dokumenData.map(d => {
+                let statusBadge = '';
+                if (d.status === 'Disetujui') {
+                    statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">✅ Disetujui</span>';
+                } else if (d.status === 'Revisi') {
+                    statusBadge = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">⚠️ Perlu Revisi</span>';
+                } else {
+                    statusBadge = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold">⏳ Menunggu</span>';
+                }
+                
+                return `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📎</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800 text-sm">${d.jenis}</h4>
+                                <p class="text-xs text-slate-400">${d.nama} • ${formatDate(d.tanggal)}</p>
+                            </div>
+                        </div>
+                        <div class="text-right flex gap-2">
+                            ${statusBadge}
+                            <button onclick="deleteDokumen(${d.id})" class="text-red-400 hover:text-red-600 text-sm" title="Hapus">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteDokumen(id) {
+            if (confirm('Yakin ingin menghapus dokumen ini?')) {
+                dokumenData = dokumenData.filter(d => d.id !== id);
+                saveData();
+                renderDokumenList();
+                showToast('✅', 'Dokumen berhasil dihapus');
+            }
+        }
+
+        function showUploadModal() {
+            document.getElementById('uploadModal').classList.remove('hidden');
+            document.getElementById('uploadJenis').value = '';
+            document.getElementById('fileLabel').innerText = 'Klik untuk pilih file';
+            document.getElementById('fileInput').value = '';
+        }
+
+        function closeUploadModal() {
+            document.getElementById('uploadModal').classList.add('hidden');
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                document.getElementById('fileLabel').innerText = file.name;
+            }
+        }
+
+        function confirmUpload() {
+            const jenis = document.getElementById('uploadJenis').value;
+            const fileInput = document.getElementById('fileInput');
+            
+            if (!jenis) {
+                showToast('⚠️', 'Pilih jenis dokumen terlebih dahulu!');
+                return;
+            }
+            
+            if (!fileInput.files[0]) {
+                showToast('⚠️', 'Pilih file terlebih dahulu!');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const newDokumen = {
+                id: Date.now(),
+                jenis: jenis,
+                nama: file.name,
+                tanggal: new Date().toISOString().split('T')[0],
+                status: 'Menunggu'
+            };
+            
+            dokumenData.unshift(newDokumen);
+            
+            notifikasiData.unshift({
+                id: Date.now(),
+                judul: 'Dokumen Diupload',
+                pesan: `${jenis} berhasil diupload dan menunggu verifikasi`,
+                waktu: 'Baru saja',
+                dibaca: false,
+                icon: '📤'
+            });
+            
+            saveData();
+            closeUploadModal();
+            renderDokumenList();
+            renderNotifikasiList();
+            updateBadges();
+            showToast('✅', 'Dokumen berhasil diupload!');
+        }
+
+        // ===== NOTIFIKASI =====
+        function renderNotifikasiList() {
+            const container = document.getElementById('notifikasi-list');
+            
+            if (notifikasiData.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-5xl mb-3">🔔</div>
+                        <p class="text-slate-400 text-sm">Tidak ada notifikasi</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = notifikasiData.map(n => `
+                <div onclick="markAsRead(${n.id})" class="p-4 ${n.dibaca ? 'bg-slate-50' : 'bg-blue-50'} rounded-xl border ${n.dibaca ? 'border-slate-100' : 'border-blue-200'} flex gap-3 cursor-pointer hover:shadow-md transition">
+                    <div class="text-2xl">${n.icon}</div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-slate-800 text-sm mb-1">${n.judul}</h4>
+                        <p class="text-xs text-slate-500 mb-1">${n.pesan}</p>
+                        <p class="text-[10px] text-slate-400">${n.waktu}</p>
+                    </div>
+                    ${!n.dibaca ? '<span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></span>' : ''}
+                </div>
+            `).join('');
+        }
+
+        function markAsRead(id) {
+            const notif = notifikasiData.find(n => n.id === id);
+            if (notif) {
+                notif.dibaca = true;
+                saveData();
+                renderNotifikasiList();
+                updateBadges();
+            }
+        }
+
+        function markAllRead() {
+            notifikasiData.forEach(n => n.dibaca = true);
+            saveData();
+            renderNotifikasiList();
+            updateBadges();
+            showToast('✅', 'Semua notifikasi ditandai sudah dibaca');
+        }
+
+        function updateBadges() {
+            const unreadCount = notifikasiData.filter(n => !n.dibaca).length;
+            const aplikasiCount = aplikasiData.filter(a => a.status === 'Verifikasi' || a.status === 'Review Admin').length;
+            
+            document.getElementById('badge-notif').innerText = unreadCount;
+            document.getElementById('badge-aplikasi').innerText = aplikasiCount;
+            document.getElementById('header-notif-badge').innerText = unreadCount;
+            
+            // Hide badge if 0
+            document.getElementById('badge-notif').style.display = unreadCount > 0 ? 'inline' : 'none';
+            document.getElementById('header-notif-badge').style.display = unreadCount > 0 ? 'flex' : 'none';
+        }
+
+        // ===== PROFIL =====
+        function saveProfile() {
+            const nama = document.getElementById('profile-input-nama').value;
+            const email = document.getElementById('profile-input-email').value;
+            const phone = document.getElementById('profile-input-phone').value;
+            const ipk = document.getElementById('profile-input-ipk').value;
+            
+            localStorage.setItem('profile_mahasiswa', JSON.stringify({ nama, email, phone, ipk }));
+            
+            document.getElementById('profile-name').innerText = nama;
+            const initials = nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.getElementById('header-avatar').innerText = initials;
+            document.getElementById('profile-avatar').innerText = initials;
+            
+            showToast('✅', 'Profil berhasil disimpan!');
+        }
+
+        // ===== LOGOUT =====
+        function doLogout() {
+            if (confirm('Yakin ingin logout?')) {
+                sessionStorage.clear();
+                window.location.href = 'index.html';
+            }
+        }
+
+        // ===== UTILITIES =====
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            const date = new Date(dateStr);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
+        }
+
+        function showToast(icon, message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            let bgColor = 'bg-slate-900';
+            if (icon === '✅') bgColor = 'bg-emerald-500';
+            else if (icon === '⚠️') bgColor = 'bg-amber-500';
+            else if (icon === '❌') bgColor = 'bg-red-500';
+            
+            toast.className = `toast-enter ${bgColor} text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 min-w-[280px] max-w-sm`;
+            toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.transition = 'all 0.3s ease';
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modals on outside click
+        document.getElementById('uploadModal').addEventListener('click', function(e) {
+            if (e.target === this) closeUploadModal();
+        });
+
+        // ESC key to close modal
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeUploadModal();
+            }
+        });
     </script>
 </body>
 </html>
