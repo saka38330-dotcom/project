@@ -54,6 +54,9 @@ $stmt->bind_result($id, $hash);
 $stmt->fetch();
 $stmt->close();
 
+// Pastikan $hash selalu berupa string untuk menghindari error pada preg_match/password_verify
+$hash = $hash ?? '';
+
 $loginOk = false;
 
 // Deteksi apakah password sudah di-hash
