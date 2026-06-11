@@ -3,991 +3,373 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <title>Dashboard Mahasiswa - Portal Beasiswa</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Portofolio Saya</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); min-height: 100vh; }
+        .gradient-bg { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        .glass { background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); }
+        .hidden { display: none !important; }
         
-        .glass-card {
-            background: rgba(255, 255, 255, 0.97);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .sidebar {
-            background: rgba(15, 23, 42, 0.98);
-            backdrop-filter: blur(10px);
-        }
-        
-        .nav-item {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            cursor: pointer;
-        }
-        
-        .nav-item:hover, .nav-item.active {
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.2) 0%, transparent 100%);
-            border-left: 3px solid #3b82f6;
-            color: white !important;
-        }
-        
-        .stat-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            transition: all 0.3s;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.5);
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .badge-pulse {
-            animation: badgePulse 2s infinite;
-        }
-        
-        @keyframes badgePulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4); }
-            50% { box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
-        }
-
-        .slide-up {
-            animation: slideUp 0.4s ease-out;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .toast-enter {
-            animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes toastIn {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        
-        /* Slideshow Styles */
-        .beasiswa-slideshow {
+        /* SLIDESHOW FIX - PASTI MUNCUL */
+        .slide-container {
             position: relative;
+            width: 100%;
+            height: 400px;
+            border-radius: 20px;
             overflow: hidden;
-            height: 280px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-        
-        .beasiswa-slide {
+        .slide {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
-            transform: translateX(100px) scale(0.95);
-            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-            pointer-events: none;
-        }
-        
-        .beasiswa-slide.active {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-            pointer-events: all;
-        }
-        
-        .beasiswa-slide.prev {
-            transform: translateX(-100px) scale(0.95);
-        }
-        
-        .slide-indicators {
+            transition: opacity 1s;
             display: flex;
+            align-items: center;
             justify-content: center;
-            gap: 10px;
-            margin-top: 20px;
+            font-size: 48px;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
-        
-        .indicator {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #cbd5e1;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
+        .slide.active { opacity: 1; }
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
         }
-        
-        .indicator.active {
-            background: #3b82f6;
-            width: 32px;
-            border-radius: 5px;
-            border-color: #93c5fd;
-        }
-        
-        .indicator:hover {
-            background: #60a5fa;
-            transform: scale(1.2);
-        }
-        
-        .beasiswa-card {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
-        }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 3px; }
-
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
-            .sidebar.open { transform: translateX(0); }
-            main { margin-left: 0 !important; }
+        .slide-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
         }
     </style>
 </head>
-<body class="flex">
+<body class="bg-gray-900">
 
-    <!-- SIDEBAR -->
-    <aside id="sidebar" class="sidebar w-64 min-h-screen fixed left-0 top-0 text-white p-6 flex flex-col z-40">
-        <div class="mb-8">
-            <div class="flex items-center gap-3 mb-2">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-xl">🎓</div>
-                <div>
-                    <h1 class="font-bold text-lg leading-tight">Portal Beasiswa</h1>
-                    <p class="text-[10px] text-slate-400">Dashboard Mahasiswa</p>
+    <!-- AUTH -->
+    <div id="authSection" class="min-h-screen gradient-bg flex items-center justify-center p-4">
+        <div id="loginForm" class="glass rounded-3xl p-8 w-full max-w-md text-white">
+            <h2 class="text-4xl font-bold text-center mb-8">Login 👋</h2>
+            <input id="loginUser" placeholder="Username" class="w-full px-4 py-3 mb-4 bg-white/20 rounded-xl text-white placeholder-white/70">
+            <input id="loginPass" type="password" placeholder="Password" class="w-full px-4 py-3 mb-6 bg-white/20 rounded-xl text-white placeholder-white/70">
+            <button onclick="login()" class="w-full bg-white text-pink-600 py-3 rounded-xl font-bold">Login</button>
+            <p class="text-center mt-4">Belum punya akun? <button onclick="toggleAuth()" class="underline">Register</button></p>
+        </div>
+        
+        <div id="registerForm" class="hidden glass rounded-3xl p-8 w-full max-w-md text-white">
+            <h2 class="text-4xl font-bold text-center mb-8">Register 🚀</h2>
+            <input id="regName" placeholder="Nama Lengkap" class="w-full px-4 py-3 mb-4 bg-white/20 rounded-xl text-white placeholder-white/70">
+            <input id="regUser" placeholder="Username" class="w-full px-4 py-3 mb-4 bg-white/20 rounded-xl text-white placeholder-white/70">
+            <input id="regPass" type="password" placeholder="Password" class="w-full px-4 py-3 mb-6 bg-white/20 rounded-xl text-white placeholder-white/70">
+            <button onclick="register()" class="w-full bg-white text-pink-600 py-3 rounded-xl font-bold">Register</button>
+            <p class="text-center mt-4">Sudah punya? <button onclick="toggleAuth()" class="underline">Login</button></p>
+        </div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div id="portfolioSection" class="hidden">
+        <!-- NAVBAR -->
+        <nav class="fixed w-full glass z-50 px-6 py-4">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-white">✨ Portfolio</h1>
+                <div class="relative">
+                    <img id="profilePic" onclick="toggleMenu()" src="" class="w-12 h-12 rounded-full border-2 border-white cursor-pointer">
+                    <div id="menuDropdown" class="hidden absolute right-0 mt-2 w-48 bg-gray-900 rounded-xl p-2">
+                        <button onclick="openModal('photoModal')" class="w-full px-4 py-2 text-left text-white hover:bg-white/10 rounded">📷 Ganti Foto</button>
+                        <button onclick="logout()" class="w-full px-4 py-2 text-left text-red-400 hover:bg-red-500/10 rounded">Logout</button>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <nav class="flex-1 space-y-1">
-            <a onclick="showSection('dashboard', this)" class="nav-item active flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium">
-                <span class="text-lg">📊</span> Dashboard
-            </a>
-            <a onclick="showSection('aplikasi', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
-                <span class="text-lg">📝</span> Aplikasi Saya
-                <span id="badge-aplikasi" class="ml-auto bg-amber-500 text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
-            </a>
-            <a onclick="showSection('dokumen', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
-                <span class="text-lg">📄</span> Dokumen
-            </a>
-            <a onclick="showSection('notifikasi', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
-                <span class="text-lg">🔔</span> Notifikasi
-                <span id="badge-notif" class="ml-auto bg-red-500 text-[10px] px-2 py-0.5 rounded-full font-bold">0</span>
-            </a>
-            <a onclick="showSection('profil', this)" class="nav-item flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-slate-300">
-                <span class="text-lg">👤</span> Profil Saya
-            </a>
         </nav>
 
-        <div class="pt-6 border-t border-white/10">
-            <a onclick="doLogout()" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-400 hover:bg-red-500/10 transition cursor-pointer">
-                <span class="text-lg">⏻</span> Logout
-            </a>
-        </div>
-    </aside>
-
-    <!-- MOBILE MENU BUTTON -->
-    <button onclick="toggleSidebar()" class="md:hidden fixed top-4 left-4 z-50 bg-blue-500 text-white p-2 rounded-xl shadow-lg">
-        ☰
-    </button>
-
-    <!-- MAIN CONTENT -->
-    <main class="flex-1 ml-64 p-6 md:p-8">
-        
-        <!-- HEADER -->
-        <header class="flex justify-between items-center mb-8 fade-in">
-            <div>
-                <h2 class="text-2xl font-bold text-white mb-1">Selamat Datang, <span id="nama-mahasiswa">Mahasiswa</span>! 👋</h2>
-                <p class="text-slate-400 text-sm">NIM: <span id="nim-mahasiswa">-</span> • Teknik Informatika</p>
-            </div>
-            <div class="flex items-center gap-4">
-                <button onclick="showSection('notifikasi', document.querySelectorAll('.nav-item')[3])" class="relative p-2 bg-white/10 rounded-xl hover:bg-white/20 transition">
-                    <span class="text-xl">🔔</span>
-                    <span id="header-notif-badge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center">0</span>
-                </button>
-                <div id="header-avatar" class="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl flex items-center justify-center text-white font-bold">
-                    M
-                </div>
-            </div>
-        </header>
-
-        <!-- SECTION: DASHBOARD -->
-        <section id="section-dashboard" class="fade-in space-y-6">
-            
-            <!-- SLIDESHOW BEASISWA (Menggantikan 4 Statistik) -->
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-lg font-bold text-slate-800">📚 Beasiswa Tersedia</h3>
-                    <span class="text-xs text-slate-400">Auto-slide setiap 5 detik</span>
+        <!-- HERO DENGAN SLIDESHOW -->
+        <section class="gradient-bg min-h-screen flex items-center px-6 pt-20">
+            <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center w-full">
+                <div class="text-white">
+                    <h1 class="text-5xl font-bold mb-4">Halo, <span id="userName" class="text-yellow-300"></span>! 👋</h1>
+                    <p class="text-xl mb-8">Web Developer & Designer</p>
+                    <button onclick="openModal('addPhotoModal')" class="bg-white text-pink-600 px-6 py-3 rounded-full font-bold">+ Tambah Foto</button>
                 </div>
                 
-                <div class="beasiswa-slideshow" id="beasiswa-slideshow">
-                    <!-- Slides akan di-generate oleh JavaScript -->
+                <!-- SLIDESHOW YANG DIPERBAIKI -->
+                <div class="slide-container" id="slideshow">
+                    <!-- Slide akan digenerate oleh JavaScript -->
                 </div>
-                
-                <!-- Indicators -->
-                <div class="slide-indicators" id="slide-indicators">
-                    <!-- Indicators akan di-generate oleh JavaScript -->
-                </div>
-            </div>
-
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-slate-800">Aplikasi Berjalan</h3>
-                    <a onclick="showSection('aplikasi', document.querySelectorAll('.nav-item')[1])" class="text-sm text-blue-500 hover:text-blue-600 font-semibold cursor-pointer">Lihat Semua →</a>
-                </div>
-                <div id="active-applications" class="space-y-4"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button onclick="showSection('dokumen', document.querySelectorAll('.nav-item')[2])" class="glass-card p-6 rounded-2xl text-left hover:shadow-xl transition group">
-                    <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">📄</div>
-                    <h4 class="font-bold text-slate-800 mb-1">Upload Dokumen</h4>
-                    <p class="text-xs text-slate-400">Lengkapi berkas persyaratan beasiswa</p>
-                </button>
-                
-                <button onclick="showSection('profil', document.querySelectorAll('.nav-item')[4])" class="glass-card p-6 rounded-2xl text-left hover:shadow-xl transition group">
-                    <div class="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">👤</div>
-                    <h4 class="font-bold text-slate-800 mb-1">Update Profil</h4>
-                    <p class="text-xs text-slate-400">Perbarui data diri dan prestasi Anda</p>
-                </button>
-                
-                <button onclick="refreshBeasiswa()" class="glass-card p-6 rounded-2xl text-left hover:shadow-xl transition group">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center text-2xl mb-3 group-hover:scale-110 transition">🔄</div>
-                    <h4 class="font-bold text-slate-800 mb-1">Refresh Data</h4>
-                    <p class="text-xs text-slate-400">Muat ulang data beasiswa</p>
-                </button>
             </div>
         </section>
 
-        <!-- SECTION: APLIKASI SAYA -->
-        <section id="section-aplikasi" class="hidden fade-in space-y-6">
-            <div class="glass-card rounded-2xl p-6">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">📝 Aplikasi Beasiswa Saya</h3>
-                <div class="space-y-4" id="aplikasi-list"></div>
+        <!-- ABOUT -->
+        <section class="py-20 px-6 bg-gray-900 text-center">
+            <h2 class="text-4xl font-bold text-white mb-4">About Me</h2>
+            <p class="text-gray-400 max-w-2xl mx-auto">Saya passionate membuat website dan aplikasi yang keren dan fungsional.</p>
+        </section>
+
+        <!-- PROJECTS -->
+        <section class="py-20 px-6 bg-gray-800">
+            <div class="max-w-6xl mx-auto">
+                <h2 class="text-4xl font-bold text-white text-center mb-12">My Projects</h2>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-gray-900 rounded-2xl p-6 hover:scale-105 transition">
+                        <div class="h-40 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl mb-4 flex items-center justify-center text-6xl">🌐</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Website</h3>
+                        <p class="text-gray-400">Responsive & Modern</p>
+                    </div>
+                    <div class="bg-gray-900 rounded-2xl p-6 hover:scale-105 transition">
+                        <div class="h-40 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl mb-4 flex items-center justify-center text-6xl">📱</div>
+                        <h3 class="text-xl font-bold text-white mb-2">Mobile App</h3>
+                        <p class="text-gray-400">iOS & Android</p>
+                    </div>
+                    <div class="bg-gray-900 rounded-2xl p-6 hover:scale-105 transition">
+                        <div class="h-40 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl mb-4 flex items-center justify-center text-6xl">🎨</div>
+                        <h3 class="text-xl font-bold text-white mb-2">UI/UX Design</h3>
+                        <p class="text-gray-400">Beautiful Interface</p>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- SECTION: DOKUMEN -->
-        <section id="section-dokumen" class="hidden fade-in space-y-6">
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-slate-800">📄 Dokumen Saya</h3>
-                    <button onclick="showUploadModal()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl text-sm transition">
-                        + Upload Dokumen
-                    </button>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="dokumen-list"></div>
-            </div>
-        </section>
+        <footer class="bg-gray-900 text-white py-8 text-center"><p>© 2026 My Portfolio</p></footer>
+    </div>
 
-        <!-- SECTION: NOTIFIKASI -->
-        <section id="section-notifikasi" class="hidden fade-in space-y-6">
-            <div class="glass-card rounded-2xl p-6">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-slate-800">🔔 Notifikasi</h3>
-                    <button onclick="markAllRead()" class="text-sm text-blue-500 hover:text-blue-600 font-semibold">Tandai Semua Dibaca</button>
-                </div>
-                <div class="space-y-3" id="notifikasi-list"></div>
-            </div>
-        </section>
-
-        <!-- SECTION: PROFIL -->
-        <section id="section-profil" class="hidden fade-in space-y-6">
-            <div class="glass-card rounded-2xl p-6">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">👤 Profil Saya</h3>
-                
-                <div class="flex items-center gap-6 mb-8">
-                    <div id="profile-avatar" class="w-24 h-24 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl flex items-center justify-center text-4xl font-bold text-white">
-                        M
-                    </div>
-                    <div>
-                        <h4 id="profile-name" class="text-xl font-bold text-slate-800">-</h4>
-                        <p id="profile-nim" class="text-slate-400 text-sm">NIM: -</p>
-                        <p class="text-slate-400 text-sm">Teknik Informatika • Semester 5</p>
-                    </div>
-                </div>
-                
-                <form class="grid grid-cols-1 md:grid-cols-2 gap-4" onsubmit="event.preventDefault(); saveProfile();">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Nama Lengkap</label>
-                        <input type="text" id="profile-input-nama" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">NIM</label>
-                        <input type="text" id="profile-input-nim" disabled class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-400">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Email</label>
-                        <input type="email" id="profile-input-email" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">No. Telepon</label>
-                        <input type="tel" id="profile-input-phone" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">IPK</label>
-                        <input type="text" id="profile-input-ipk" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Jurusan</label>
-                        <input type="text" value="Teknik Informatika" disabled class="w-full px-4 py-2.5 bg-slate-100 border border-slate-200 rounded-xl text-sm text-slate-400">
-                    </div>
-                    <div class="md:col-span-2">
-                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-xl text-sm transition">
-                            💾 Simpan Perubahan
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- UPLOAD MODAL -->
-    <div id="uploadModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden slide-up">
-            <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-5">
-                <h3 class="font-bold text-base">📄 Upload Dokumen</h3>
-                <p class="text-xs text-blue-100 mt-1">Unggah dokumen persyaratan beasiswa</p>
-            </div>
-            <div class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">Jenis Dokumen</label>
-                    <select id="uploadJenis" class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500">
-                        <option value="">Pilih Jenis Dokumen</option>
-                        <option value="Transkrip Nilai">Transkrip Nilai</option>
-                        <option value="Kartu Tanda Mahasiswa">Kartu Tanda Mahasiswa</option>
-                        <option value="Kartu Keluarga">Kartu Keluarga</option>
-                        <option value="Sertifikat Prestasi">Sertifikat Prestasi</option>
-                        <option value="Surat Keterangan Tidak Mampu">SKTM</option>
-                        <option value="Lainnya">Lainnya</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-2 uppercase">File Dokumen</label>
-                    <div onclick="document.getElementById('fileInput').click()" class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-blue-400 transition cursor-pointer">
-                        <div class="text-3xl mb-2">📎</div>
-                        <p id="fileLabel" class="text-sm text-slate-600 font-medium">Klik untuk pilih file</p>
-                        <p class="text-xs text-slate-400 mt-1">PDF, JPG, PNG (Max 5MB)</p>
-                        <input type="file" id="fileInput" class="hidden" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(event)">
-                    </div>
-                </div>
-            </div>
-            <div class="p-4 bg-slate-50 border-t flex justify-end gap-2">
-                <button onclick="closeUploadModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-600 rounded-xl text-xs font-semibold transition">Batal</button>
-                <button onclick="confirmUpload()" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-semibold transition">Upload</button>
+    <!-- MODAL GANTI FOTO PROFIL -->
+    <div id="photoModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 rounded-2xl p-6 w-full max-w-sm">
+            <h3 class="text-xl font-bold text-white mb-4">📷 Ganti Foto Profil</h3>
+            <input type="file" id="profileInput" accept="image/*" class="w-full mb-4 text-white" onchange="updateProfilePhoto(event)">
+            <div class="flex gap-2">
+                <button onclick="closeModal('photoModal')" class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg">Batal</button>
+                <button onclick="removeProfilePhoto()" class="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg">Hapus</button>
             </div>
         </div>
     </div>
 
-    <!-- TOAST CONTAINER -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-[80] space-y-2"></div>
+    <!-- MODAL TAMBAH FOTO SLIDE -->
+    <div id="addPhotoModal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div class="bg-gray-900 rounded-2xl p-6 w-full max-w-sm">
+            <h3 class="text-xl font-bold text-white mb-4">➕ Tambah Foto ke Slide</h3>
+            <input type="file" id="slideInput" accept="image/*" multiple class="w-full mb-4 text-white" onchange="previewPhotos(event)">
+            <div id="preview" class="grid grid-cols-3 gap-2 mb-4"></div>
+            <div class="flex gap-2">
+                <button onclick="closeModal('addPhotoModal')" class="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg">Batal</button>
+                <button onclick="addPhotosToSlide()" class="flex-1 px-4 py-2 bg-pink-500 text-white rounded-lg">Tambah</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // ===== SLIDESHOW CONFIGURATION =====
+        let currentUser = null;
         let currentSlide = 0;
-        let slideshowInterval;
+        let slideInterval;
+        let selectedPhotos = [];
+        
+        // DEFAULT SLIDES - PAKAI GRADIENT WARNA (PASTI MUNCUL!)
+        const defaultSlides = [
+            { bg: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)', text: 'Welcome! 🎨', icon: '🎨' },
+            { bg: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)', text: 'Creative Work 🚀', icon: '🚀' },
+            { bg: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)', text: 'My Portfolio ✨', icon: '✨' }
+        ];
+        
+        let slides = JSON.parse(localStorage.getItem('portfolioSlides')) || defaultSlides;
 
-        // ===== SESSION VALIDATION =====
-        window.addEventListener('load', function() {
-            const loggedRole = sessionStorage.getItem('loggedRole');
-            const loggedUsername = sessionStorage.getItem('loggedUsername');
-            
-            if (!loggedRole || loggedRole !== 'mahasiswa') {
-                window.location.href = 'index.html';
-                return;
+        // CHECK LOGIN
+        window.onload = function() {
+            const saved = localStorage.getItem('currentUser');
+            if (saved) {
+                currentUser = JSON.parse(saved);
+                showPortfolio();
             }
+        };
+
+        function toggleAuth() {
+            document.getElementById('loginForm').classList.toggle('hidden');
+            document.getElementById('registerForm').classList.toggle('hidden');
+        }
+
+        function register() {
+            const name = document.getElementById('regName').value;
+            const user = document.getElementById('regUser').value;
+            const pass = document.getElementById('regPass').value;
             
-            // Update user info
-            const nama = loggedUsername.charAt(0).toUpperCase() + loggedUsername.slice(1);
-            document.getElementById('nama-mahasiswa').innerText = nama;
-            document.getElementById('nim-mahasiswa').innerText = loggedUsername;
-            document.getElementById('profile-name').innerText = nama;
-            document.getElementById('profile-nim').innerText = 'NIM: ' + loggedUsername;
-            document.getElementById('profile-input-nama').value = nama;
-            document.getElementById('profile-input-nim').value = loggedUsername;
-            document.getElementById('profile-input-email').value = loggedUsername + '@student.univ.ac.id';
-            document.getElementById('profile-input-phone').value = '08' + loggedUsername;
-            document.getElementById('profile-input-ipk').value = '3.75';
+            if (!name || !user || !pass) return alert('Isi semua field!');
             
-            const initials = nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            document.getElementById('header-avatar').innerText = initials;
-            document.getElementById('profile-avatar').innerText = initials;
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.find(u => u.username === user)) return alert('Username sudah ada!');
             
-            // Load data
-            loadData();
+            users.push({ name, username: user, password: pass, photo: '' });
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Register berhasil!');
+            toggleAuth();
+        }
+
+        function login() {
+            const user = document.getElementById('loginUser').value;
+            const pass = document.getElementById('loginPass').value;
+            
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            const found = users.find(u => u.username === user && u.password === pass);
+            
+            if (!found) return alert('Username/password salah!');
+            
+            currentUser = found;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            showPortfolio();
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            location.reload();
+        }
+
+        function showPortfolio() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('portfolioSection').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.name;
+            
+            const pic = document.getElementById('profilePic');
+            pic.src = currentUser.photo || 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=random';
+            
             startSlideshow();
-        });
-
-        // ===== DATA MANAGEMENT =====
-        let beasiswaData = JSON.parse(localStorage.getItem('beasiswa_list')) || [
-            { id: 1, nama: 'Beasiswa Prestasi Akademik 2026', jenis: 'prestasi', nominal: 10000000, deadline: '2026-06-30', kuota: 50, tersisa: 23, deskripsi: 'Beasiswa untuk mahasiswa berprestasi dengan IPK minimal 3.5' },
-            { id: 2, nama: 'Beasiswa Bantuan Biaya Hidup', jenis: 'bidikmisi', nominal: 5000000, deadline: '2026-07-15', kuota: 100, tersisa: 67, deskripsi: 'Bantuan biaya hidup untuk mahasiswa kurang mampu' },
-            { id: 3, nama: 'Beasiswa Talenta Olahraga', jenis: 'talenta', nominal: 7500000, deadline: '2026-06-25', kuota: 20, tersisa: 8, deskripsi: 'Beasiswa untuk atlet berprestasi tingkat nasional' },
-            { id: 4, nama: 'Beasiswa Penelitian Inovasi', jenis: 'prestasi', nominal: 15000000, deadline: '2026-08-01', kuota: 15, tersisa: 12, deskripsi: 'Beasiswa untuk mahasiswa yang melakukan penelitian inovatif' },
-            { id: 5, nama: 'Beasiswa Seni & Budaya', jenis: 'talenta', nominal: 6000000, deadline: '2026-07-20', kuota: 25, tersisa: 15, deskripsi: 'Beasiswa untuk mahasiswa berprestasi di bidang seni dan budaya' }
-        ];
-
-        let aplikasiData = JSON.parse(localStorage.getItem('aplikasi_mahasiswa')) || [
-            { id: 1, beasiswaId: 1, status: 'Verifikasi', tanggal: '2026-06-01', progress: 75, catatan: '' },
-            { id: 2, beasiswaId: 2, status: 'Review Admin', tanggal: '2026-05-28', progress: 90, catatan: '' }
-        ];
-
-        let dokumenData = JSON.parse(localStorage.getItem('dokumen_mahasiswa')) || [
-            { id: 1, jenis: 'Transkrip Nilai', nama: 'transkrip_semester_4.pdf', tanggal: '2026-06-01', status: 'Disetujui' },
-            { id: 2, jenis: 'Kartu Tanda Mahasiswa', nama: 'ktm_2026.jpg', tanggal: '2026-06-01', status: 'Disetujui' },
-            { id: 3, jenis: 'Kartu Keluarga', nama: 'kartu_keluarga.pdf', tanggal: '2026-05-28', status: 'Disetujui' },
-            { id: 4, jenis: 'Sertifikat Prestasi', nama: 'sertifikat_lomba.pdf', tanggal: '2026-05-25', status: 'Revisi' }
-        ];
-
-        let notifikasiData = JSON.parse(localStorage.getItem('notifikasi_mahasiswa')) || [
-            { id: 1, judul: 'Dokumen Disetujui', pesan: 'Transkrip Nilai Anda telah disetujui oleh verifikator', waktu: '2 jam yang lalu', dibaca: false, icon: '✅' },
-            { id: 2, judul: 'Beasiswa Diterima', pesan: 'Selamat! Anda diterima di Beasiswa Prestasi Akademik 2026', waktu: '1 hari yang lalu', dibaca: false, icon: '🎉' },
-            { id: 3, judul: 'Revisi Dokumen', pesan: 'Sertifikat Prestasi perlu direvisi - mohon upload ulang', waktu: '3 hari yang lalu', dibaca: false, icon: '⚠️' },
-            { id: 4, judul: 'Deadline Mendekat', pesan: 'Beasiswa Talenta Olahraga tutup dalam 5 hari', waktu: '5 hari yang lalu', dibaca: true, icon: '⏰' }
-        ];
-
-        function saveData() {
-            localStorage.setItem('beasiswa_list', JSON.stringify(beasiswaData));
-            localStorage.setItem('aplikasi_mahasiswa', JSON.stringify(aplikasiData));
-            localStorage.setItem('dokumen_mahasiswa', JSON.stringify(dokumenData));
-            localStorage.setItem('notifikasi_mahasiswa', JSON.stringify(notifikasiData));
         }
 
-        function loadData() {
-            renderBeasiswaSlideshow();
-            renderActiveApplications();
-            renderAplikasiList();
-            renderDokumenList();
-            renderNotifikasiList();
-            updateBadges();
-        }
-
-        // ===== SLIDESHOW FUNCTIONS =====
+        // SLIDESHOW FUNCTION - DIPERBAIKI!
         function startSlideshow() {
-            slideshowInterval = setInterval(() => {
-                nextSlide();
-            }, 5000); // Change slide every 5 seconds
+            clearInterval(slideInterval);
+            renderSlides();
+            slideInterval = setInterval(nextSlide, 3000);
+        }
+
+        function renderSlides() {
+            const container = document.getElementById('slideshow');
+            container.innerHTML = slides.map((slide, index) => `
+                <div class="slide ${index === currentSlide ? 'active' : ''}" style="background: ${slide.bg}">
+                    ${slide.img ? `<img src="${slide.img}" style="opacity: 0.7">` : ''}
+                    <div class="slide-content">
+                        <div style="font-size: 72px; margin-bottom: 10px">${slide.icon || '📸'}</div>
+                        <div>${slide.text}</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Dots indicator
+            const dots = document.createElement('div');
+            dots.className = 'absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2';
+            dots.innerHTML = slides.map((_, i) => `
+                <button onclick="goToSlide(${i})" class="w-3 h-3 rounded-full ${i === currentSlide ? 'bg-white' : 'bg-white/50'}"></button>
+            `).join('');
+            container.appendChild(dots);
         }
 
         function nextSlide() {
-            const totalSlides = beasiswaData.length;
-            const slides = document.querySelectorAll('.beasiswa-slide');
-            const indicators = document.querySelectorAll('.indicator');
-            
-            if (slides.length === 0) return;
-            
-            // Remove active from current
-            slides[currentSlide].classList.remove('active');
-            slides[currentSlide].classList.add('prev');
-            if (indicators[currentSlide]) indicators[currentSlide].classList.remove('active');
-            
-            // Move to next
-            currentSlide = (currentSlide + 1) % totalSlides;
-            
-            // Add active to new
-            slides[currentSlide].classList.remove('prev');
-            slides[currentSlide].classList.add('active');
-            if (indicators[currentSlide]) indicators[currentSlide].classList.add('active');
+            currentSlide = (currentSlide + 1) % slides.length;
+            renderSlides();
         }
 
         function goToSlide(index) {
-            const slides = document.querySelectorAll('.beasiswa-slide');
-            const indicators = document.querySelectorAll('.indicator');
-            
-            if (slides.length === 0) return;
-            
-            slides[currentSlide].classList.remove('active');
-            if (indicators[currentSlide]) indicators[currentSlide].classList.remove('active');
-            
             currentSlide = index;
-            
-            slides[currentSlide].classList.remove('prev');
-            slides[currentSlide].classList.add('active');
-            if (indicators[currentSlide]) indicators[currentSlide].classList.add('active');
-            
-            // Reset interval
-            clearInterval(slideshowInterval);
-            startSlideshow();
+            renderSlides();
+            clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 3000);
         }
 
-        function renderBeasiswaSlideshow() {
-            const container = document.getElementById('beasiswa-slideshow');
-            const indicatorsContainer = document.getElementById('slide-indicators');
-            
-            if (beasiswaData.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="text-5xl mb-3">📭</div>
-                        <p class="text-slate-400 text-sm">Tidak ada beasiswa tersedia</p>
-                    </div>
-                `;
-                indicatorsContainer.innerHTML = '';
-                return;
+        function toggleMenu() {
+            document.getElementById('menuDropdown').classList.toggle('hidden');
+        }
+
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('menuDropdown');
+            const pic = document.getElementById('profilePic');
+            if (menu && pic && !menu.contains(e.target) && !pic.contains(e.target)) {
+                menu.classList.add('hidden');
             }
+        });
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById('menuDropdown').classList.add('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function updateProfilePhoto(e) {
+            const file = e.target.files[0];
+            if (!file) return;
             
-            // Render slides
-            container.innerHTML = beasiswaData.map((b, index) => {
-                const alreadyApplied = aplikasiData.some(a => a.beasiswaId === b.id);
-                const daysLeft = getDaysLeft(b.deadline);
-                let urgencyBadge = '';
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                currentUser.photo = ev.target.result;
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
                 
-                if (daysLeft <= 7 && daysLeft > 0) {
-                    urgencyBadge = '<span class="bg-red-100 text-red-700 px-3 py-1 rounded-lg text-xs font-bold">🔥 Segera Tutup</span>';
-                } else if (daysLeft <= 30 && daysLeft > 7) {
-                    urgencyBadge = '<span class="bg-amber-100 text-amber-700 px-3 py-1 rounded-lg text-xs font-bold">⏰ Segera</span>';
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                const idx = users.findIndex(u => u.username === currentUser.username);
+                if (idx !== -1) {
+                    users[idx].photo = ev.target.result;
+                    localStorage.setItem('users', JSON.stringify(users));
                 }
                 
-                return `
-                    <div class="beasiswa-slide ${index === 0 ? 'active' : ''}" data-slide="${index}">
-                        <div class="beasiswa-card p-6 rounded-2xl border border-slate-200 h-full">
-                            <div class="flex justify-between items-start mb-4">
-                                <div class="flex-1">
-                                    <div class="flex items-center gap-2 flex-wrap mb-2">
-                                        <h4 class="text-xl font-bold text-slate-800">${b.nama}</h4>
-                                        ${urgencyBadge}
-                                    </div>
-                                    <p class="text-sm text-slate-600">${b.deskripsi}</p>
-                                </div>
-                                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-lg text-xs font-bold capitalize ml-2">${b.jenis}</span>
-                            </div>
-                            
-                            <div class="grid grid-cols-3 gap-4 mb-6">
-                                <div class="bg-white p-3 rounded-xl border border-slate-100">
-                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Nominal</p>
-                                    <p class="text-lg font-bold text-emerald-600">Rp ${(b.nominal/1000000).toFixed(0)}jt</p>
-                                </div>
-                                <div class="bg-white p-3 rounded-xl border border-slate-100">
-                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Kuota</p>
-                                    <p class="text-lg font-bold text-blue-600">${b.tersisa}/${b.kuota}</p>
-                                </div>
-                                <div class="bg-white p-3 rounded-xl border border-slate-100">
-                                    <p class="text-[10px] text-slate-400 uppercase font-bold mb-1">Deadline</p>
-                                    <p class="text-sm font-bold text-red-600">${formatDate(b.deadline)}</p>
-                                </div>
-                            </div>
-                            
-                            <button onclick="daftarBeasiswa(${b.id})" 
-                                class="w-full ${alreadyApplied ? 'bg-slate-300 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'} text-white font-bold py-3 rounded-xl text-sm transition"
-                                ${alreadyApplied ? 'disabled' : ''}>
-                                ${alreadyApplied ? '✓ Sudah Mendaftar' : '📝 Daftar Sekarang'}
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            
-            // Render indicators
-            indicatorsContainer.innerHTML = beasiswaData.map((_, index) => `
-                <div class="indicator ${index === 0 ? 'active' : ''}" onclick="goToSlide(${index})" title="${beasiswaData[index].nama}"></div>
-            `).join('');
-        }
-
-        function refreshBeasiswa() {
-            loadData();
-            showToast('✅', 'Data beasiswa berhasil dimuat ulang!');
-            clearInterval(slideshowInterval);
-            startSlideshow();
-        }
-
-        function getDaysLeft(deadline) {
-            const today = new Date();
-            const deadlineDate = new Date(deadline);
-            const diff = deadlineDate - today;
-            return Math.ceil(diff / (1000 * 60 * 60 * 24));
-        }
-
-        // ===== NAVIGATION =====
-        function showSection(sectionName, navElement) {
-            document.querySelectorAll('main > section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            
-            const targetSection = document.getElementById(`section-${sectionName}`);
-            if (targetSection) {
-                targetSection.classList.remove('hidden');
-            }
-            
-            document.querySelectorAll('.nav-item').forEach(item => {
-                item.classList.remove('active');
-                item.classList.add('text-slate-300');
-            });
-            
-            if (navElement) {
-                navElement.classList.add('active');
-                navElement.classList.remove('text-slate-300');
-            }
-
-            // Close mobile sidebar
-            document.getElementById('sidebar').classList.remove('open');
-            
-            // Pause slideshow when leaving dashboard
-            if (sectionName !== 'dashboard') {
-                clearInterval(slideshowInterval);
-            } else {
-                startSlideshow();
-            }
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
-
-        // ===== ACTIVE APPLICATIONS (Dashboard) =====
-        function renderActiveApplications() {
-            const container = document.getElementById('active-applications');
-            const active = aplikasiData.filter(a => a.status !== 'Disetujui' && a.status !== 'Ditolak').slice(0, 3);
-            
-            if (active.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-8">
-                        <div class="text-4xl mb-2">📭</div>
-                        <p class="text-slate-400 text-sm">Belum ada aplikasi berjalan</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = active.map(a => {
-                const b = beasiswaData.find(bs => bs.id === a.beasiswaId);
-                if (!b) return '';
-                
-                let statusColor = 'bg-amber-50 text-amber-700 border-amber-200';
-                let statusText = 'Verifikasi';
-                if (a.status === 'Review Admin') {
-                    statusColor = 'bg-blue-50 text-blue-700 border-blue-200';
-                    statusText = 'Review Admin';
-                }
-                
-                return `
-                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-xl border border-slate-100">
-                        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📚</div>
-                        <div class="flex-1">
-                            <h4 class="font-bold text-slate-800 text-sm">${b.nama}</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Diajukan: ${formatDate(a.tanggal)}</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="inline-flex items-center gap-1 ${statusColor} px-3 py-1 rounded-lg text-xs font-bold border">
-                                <span class="w-1.5 h-1.5 bg-current rounded-full animate-pulse"></span>
-                                ${statusText}
-                            </span>
-                            <p class="text-[10px] text-slate-400 mt-1">${a.progress}% selesai</p>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ===== APLIKASI SAYA =====
-        function renderAplikasiList() {
-            const container = document.getElementById('aplikasi-list');
-            
-            if (aplikasiData.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="text-5xl mb-3">📭</div>
-                        <p class="text-slate-400 text-sm">Belum ada aplikasi beasiswa</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = aplikasiData.map(a => {
-                const b = beasiswaData.find(bs => bs.id === a.beasiswaId);
-                if (!b) return '';
-                
-                let statusColor = 'bg-amber-50 text-amber-700 border-amber-200';
-                if (a.status === 'Disetujui') statusColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-                if (a.status === 'Ditolak') statusColor = 'bg-red-50 text-red-700 border-red-200';
-                if (a.status === 'Review Admin') statusColor = 'bg-blue-50 text-blue-700 border-blue-200';
-                
-                let progressColor = 'from-blue-400 to-blue-600';
-                if (a.status === 'Disetujui') progressColor = 'from-emerald-400 to-emerald-600';
-                if (a.status === 'Ditolak') progressColor = 'from-red-400 to-red-600';
-                
-                return `
-                    <div class="p-5 bg-slate-50 rounded-xl border border-slate-100">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center gap-3">
-                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📚</div>
-                                <div>
-                                    <h4 class="font-bold text-slate-800">${b.nama}</h4>
-                                    <p class="text-xs text-slate-400">Diajukan: ${formatDate(a.tanggal)}</p>
-                                </div>
-                            </div>
-                            <span class="${statusColor} px-3 py-1 rounded-lg text-xs font-bold border">
-                                ${a.status}
-                            </span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <div class="flex justify-between text-xs mb-1">
-                                <span class="text-slate-400">Progress</span>
-                                <span class="font-bold text-slate-600">${a.progress}%</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
-                                <div class="h-full bg-gradient-to-r ${progressColor} rounded-full transition-all duration-500" 
-                                     style="width: ${a.progress}%"></div>
-                            </div>
-                        </div>
-                        
-                        ${a.catatan ? `<p class="text-xs text-slate-500 bg-white p-2 rounded-lg border border-slate-100">📝 ${a.catatan}</p>` : ''}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        // ===== DOKUMEN =====
-        function renderDokumenList() {
-            const container = document.getElementById('dokumen-list');
-            
-            if (dokumenData.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-2 text-center py-12">
-                        <div class="text-5xl mb-3">📄</div>
-                        <p class="text-slate-400 text-sm">Belum ada dokumen diupload</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = dokumenData.map(d => {
-                let statusBadge = '';
-                if (d.status === 'Disetujui') {
-                    statusBadge = '<span class="bg-emerald-100 text-emerald-700 px-2 py-1 rounded text-xs font-bold">✅ Disetujui</span>';
-                } else if (d.status === 'Revisi') {
-                    statusBadge = '<span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">⚠️ Perlu Revisi</span>';
-                } else {
-                    statusBadge = '<span class="bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs font-bold">⏳ Menunggu</span>';
-                }
-                
-                return `
-                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📎</div>
-                            <div>
-                                <h4 class="font-bold text-slate-800 text-sm">${d.jenis}</h4>
-                                <p class="text-xs text-slate-400">${d.nama} • ${formatDate(d.tanggal)}</p>
-                            </div>
-                        </div>
-                        <div class="text-right flex gap-2">
-                            ${statusBadge}
-                            <button onclick="deleteDokumen(${d.id})" class="text-red-400 hover:text-red-600 text-sm" title="Hapus">🗑️</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function deleteDokumen(id) {
-            if (confirm('Yakin ingin menghapus dokumen ini?')) {
-                dokumenData = dokumenData.filter(d => d.id !== id);
-                saveData();
-                renderDokumenList();
-                showToast('✅', 'Dokumen berhasil dihapus');
-            }
-        }
-
-        function showUploadModal() {
-            document.getElementById('uploadModal').classList.remove('hidden');
-            document.getElementById('uploadJenis').value = '';
-            document.getElementById('fileLabel').innerText = 'Klik untuk pilih file';
-            document.getElementById('fileInput').value = '';
-        }
-
-        function closeUploadModal() {
-            document.getElementById('uploadModal').classList.add('hidden');
-        }
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                document.getElementById('fileLabel').innerText = file.name;
-            }
-        }
-
-        function confirmUpload() {
-            const jenis = document.getElementById('uploadJenis').value;
-            const fileInput = document.getElementById('fileInput');
-            
-            if (!jenis) {
-                showToast('⚠️', 'Pilih jenis dokumen terlebih dahulu!');
-                return;
-            }
-            
-            if (!fileInput.files[0]) {
-                showToast('⚠️', 'Pilih file terlebih dahulu!');
-                return;
-            }
-            
-            const file = fileInput.files[0];
-            const newDokumen = {
-                id: Date.now(),
-                jenis: jenis,
-                nama: file.name,
-                tanggal: new Date().toISOString().split('T')[0],
-                status: 'Menunggu'
+                document.getElementById('profilePic').src = ev.target.result;
+                closeModal('photoModal');
+                alert('Foto profil diganti!');
             };
+            reader.readAsDataURL(file);
+        }
+
+        function removeProfilePhoto() {
+            currentUser.photo = '';
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
             
-            dokumenData.unshift(newDokumen);
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            const idx = users.findIndex(u => u.username === currentUser.username);
+            if (idx !== -1) {
+                users[idx].photo = '';
+                localStorage.setItem('users', JSON.stringify(users));
+            }
             
-            notifikasiData.unshift({
-                id: Date.now(),
-                judul: 'Dokumen Diupload',
-                pesan: `${jenis} berhasil diupload dan menunggu verifikasi`,
-                waktu: 'Baru saja',
-                dibaca: false,
-                icon: '📤'
+            document.getElementById('profilePic').src = 'https://ui-avatars.com/api/?name=' + currentUser.name + '&background=random';
+            closeModal('photoModal');
+        }
+
+        function previewPhotos(e) {
+            const preview = document.getElementById('preview');
+            preview.innerHTML = '';
+            selectedPhotos = [];
+            
+            Array.from(e.target.files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(ev) {
+                        selectedPhotos.push(ev.target.result);
+                        preview.innerHTML += `<img src="${ev.target.result}" class="w-full h-16 object-cover rounded">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function addPhotosToSlide() {
+            if (selectedPhotos.length === 0) return alert('Pilih foto dulu!');
+            
+            selectedPhotos.forEach(photo => {
+                slides.push({
+                    bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    img: photo,
+                    text: 'My Work',
+                    icon: ''
+                });
             });
             
-            saveData();
-            closeUploadModal();
-            renderDokumenList();
-            renderNotifikasiList();
-            updateBadges();
-            showToast('✅', 'Dokumen berhasil diupload!');
+            localStorage.setItem('portfolioSlides', JSON.stringify(slides));
+            currentSlide = slides.length - selectedPhotos.length;
+            startSlideshow();
+            closeModal('addPhotoModal');
+            alert(selectedPhotos.length + ' foto ditambahkan!');
         }
-
-        // ===== NOTIFIKASI =====
-        function renderNotifikasiList() {
-            const container = document.getElementById('notifikasi-list');
-            
-            if (notifikasiData.length === 0) {
-                container.innerHTML = `
-                    <div class="text-center py-12">
-                        <div class="text-5xl mb-3">🔔</div>
-                        <p class="text-slate-400 text-sm">Tidak ada notifikasi</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = notifikasiData.map(n => `
-                <div onclick="markAsRead(${n.id})" class="p-4 ${n.dibaca ? 'bg-slate-50' : 'bg-blue-50'} rounded-xl border ${n.dibaca ? 'border-slate-100' : 'border-blue-200'} flex gap-3 cursor-pointer hover:shadow-md transition">
-                    <div class="text-2xl">${n.icon}</div>
-                    <div class="flex-1">
-                        <h4 class="font-bold text-slate-800 text-sm mb-1">${n.judul}</h4>
-                        <p class="text-xs text-slate-500 mb-1">${n.pesan}</p>
-                        <p class="text-[10px] text-slate-400">${n.waktu}</p>
-                    </div>
-                    ${!n.dibaca ? '<span class="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 mt-2"></span>' : ''}
-                </div>
-            `).join('');
-        }
-
-        function markAsRead(id) {
-            const notif = notifikasiData.find(n => n.id === id);
-            if (notif) {
-                notif.dibaca = true;
-                saveData();
-                renderNotifikasiList();
-                updateBadges();
-            }
-        }
-
-        function markAllRead() {
-            notifikasiData.forEach(n => n.dibaca = true);
-            saveData();
-            renderNotifikasiList();
-            updateBadges();
-            showToast('✅', 'Semua notifikasi ditandai sudah dibaca');
-        }
-
-        function updateBadges() {
-            const unreadCount = notifikasiData.filter(n => !n.dibaca).length;
-            const aplikasiCount = aplikasiData.filter(a => a.status === 'Verifikasi' || a.status === 'Review Admin').length;
-            
-            document.getElementById('badge-notif').innerText = unreadCount;
-            document.getElementById('badge-aplikasi').innerText = aplikasiCount;
-            document.getElementById('header-notif-badge').innerText = unreadCount;
-            
-            // Hide badge if 0
-            document.getElementById('badge-notif').style.display = unreadCount > 0 ? 'inline' : 'none';
-            document.getElementById('header-notif-badge').style.display = unreadCount > 0 ? 'flex' : 'none';
-        }
-
-        // ===== PROFIL =====
-        function saveProfile() {
-            const nama = document.getElementById('profile-input-nama').value;
-            const email = document.getElementById('profile-input-email').value;
-            const phone = document.getElementById('profile-input-phone').value;
-            const ipk = document.getElementById('profile-input-ipk').value;
-            
-            localStorage.setItem('profile_mahasiswa', JSON.stringify({ nama, email, phone, ipk }));
-            
-            document.getElementById('profile-name').innerText = nama;
-            const initials = nama.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-            document.getElementById('header-avatar').innerText = initials;
-            document.getElementById('profile-avatar').innerText = initials;
-            
-            showToast('✅', 'Profil berhasil disimpan!');
-        }
-
-        // ===== LOGOUT =====
-        function doLogout() {
-            if (confirm('Yakin ingin logout?')) {
-                sessionStorage.clear();
-                window.location.href = 'index.html';
-            }
-        }
-
-        // ===== UTILITIES =====
-        function formatDate(dateStr) {
-            if (!dateStr) return '-';
-            const date = new Date(dateStr);
-            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()}`;
-        }
-
-        function showToast(icon, message) {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            
-            let bgColor = 'bg-slate-900';
-            if (icon === '✅') bgColor = 'bg-emerald-500';
-            else if (icon === '⚠️') bgColor = 'bg-amber-500';
-            else if (icon === '❌') bgColor = 'bg-red-500';
-            
-            toast.className = `toast-enter ${bgColor} text-white text-xs font-medium px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 min-w-[280px] max-w-sm`;
-            toast.innerHTML = `<span>${icon}</span><span>${message}</span>`;
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.transition = 'all 0.3s ease';
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(100px)';
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
-        }
-
-        // Close modals on outside click
-        document.getElementById('uploadModal').addEventListener('click', function(e) {
-            if (e.target === this) closeUploadModal();
-        });
-
-        // ESC key to close modal
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeUploadModal();
-            }
-        });
     </script>
 </body>
 </html>
