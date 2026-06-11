@@ -5,59 +5,239 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Verifikator Berkas</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        /* Slideshow Animation */
+        .stats-container {
+            position: relative;
+            overflow: hidden;
+            height: 140px;
+        }
+        
+        .stats-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: translateX(100px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+        
+        .stats-slide.active {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: all;
+        }
+        
+        .stats-slide.prev {
+            transform: translateX(-100px) scale(0.9);
+        }
+        
+        .slide-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        
+        .indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #cbd5e1;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .indicator.active {
+            background: #3b82f6;
+            width: 32px;
+            border-radius: 5px;
+            border-color: #93c5fd;
+        }
+        
+        .indicator:hover {
+            background: #60a5fa;
+            transform: scale(1.2);
+        }
+        
+        .stat-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4); }
+            50% { box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.2); }
+        }
+        
+        .stat-card.active {
+            animation: pulse-glow 2s infinite;
+        }
+    </style>
 </head>
 <body class="bg-slate-50">
 
-    <nav class="bg-amber-700 text-white p-4 flex items-center justify-between">
-        <h1 class="text-lg font-bold">🔍 Panel Verifikator Berkas</h1>
-        <button onclick="doLogout()" class="text-sm underline">Logout</button>
+    <nav class="bg-gradient-to-r from-amber-700 to-amber-600 text-white p-4 shadow-lg">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <h1 class="text-lg font-bold flex items-center gap-2">
+                🔍 Panel Verifikator Berkas
+                <span class="text-xs bg-amber-800/50 px-2 py-1 rounded">Live</span>
+            </h1>
+            <button onclick="doLogout()" class="text-sm bg-red-500 hover:bg-red-600 px-3 py-1.5 rounded transition">Logout</button>
+        </div>
     </nav>
 
     <div class="max-w-6xl mx-auto p-6">
         
-        <div class="grid grid-cols-3 gap-4 mb-6">
-            <div class="bg-white p-4 rounded shadow">
-                <p class="text-xs text-slate-400">Total Antrean</p>
-                <p id="count-total" class="text-2xl font-bold">0</p>
+        <!-- SLIDESHOW STATISTICS -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="stats-container">
+                <!-- Slide 1: Total Antrean -->
+                <div class="stats-slide active" data-slide="0">
+                    <div class="stat-card active bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-blue-100 mb-1">📥 Total Antrean Masuk</p>
+                                <p id="count-total" class="text-5xl font-black">0</p>
+                            </div>
+                            <div class="text-6xl opacity-50">📊</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 2: Belum Diperiksa -->
+                <div class="stats-slide" data-slide="1">
+                    <div class="stat-card bg-gradient-to-br from-amber-500 to-amber-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-amber-100 mb-1">⏳ Belum Diperiksa</p>
+                                <p id="count-pending" class="text-5xl font-black">0</p>
+                            </div>
+                            <div class="text-6xl opacity-50">⏰</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Slide 3: Selesai -->
+                <div class="stats-slide" data-slide="2">
+                    <div class="stat-card bg-gradient-to-br from-emerald-500 to-emerald-600 text-white p-6 rounded-xl">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-emerald-100 mb-1">✅ Selesai Diproses</p>
+                                <p id="count-done" class="text-5xl font-black">0</p>
+                            </div>
+                            <div class="text-6xl opacity-50">🎉</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="bg-white p-4 rounded shadow">
-                <p class="text-xs text-slate-400">Belum Diperiksa</p>
-                <p id="count-pending" class="text-2xl font-bold text-amber-600">0</p>
+            
+            <!-- Indicators -->
+            <div class="slide-indicators">
+                <div class="indicator active" onclick="goToSlide(0)" title="Total Antrean"></div>
+                <div class="indicator" onclick="goToSlide(1)" title="Belum Diperiksa"></div>
+                <div class="indicator" onclick="goToSlide(2)" title="Selesai"></div>
             </div>
-            <div class="bg-white p-4 rounded shadow">
-                <p class="text-xs text-slate-400">Selesai</p>
-                <p id="count-done" class="text-2xl font-bold text-green-600">0</p>
-            </div>
+            
+            <p class="text-center text-xs text-slate-400 mt-4">
+                Auto-slide setiap 4 detik • Klik indikator untuk navigasi
+            </p>
         </div>
 
-        <div class="bg-white rounded shadow">
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden">
             <table class="w-full">
                 <thead class="bg-slate-100">
                     <tr>
-                        <th class="p-3 text-left">Nama</th>
-                        <th class="p-3 text-left">Dokumen</th>
-                        <th class="p-3 text-left">Tanggal</th>
-                        <th class="p-3">Status</th>
-                        <th class="p-3 text-center">Aksi</th>
+                        <th class="p-4 text-left font-bold text-slate-700">Nama</th>
+                        <th class="p-4 text-left font-bold text-slate-700">Dokumen</th>
+                        <th class="p-4 text-left font-bold text-slate-700">Tanggal</th>
+                        <th class="p-4 font-bold text-slate-700">Status</th>
+                        <th class="p-4 text-center font-bold text-slate-700">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="table-verifikator"></tbody>
             </table>
-            <div id="empty" class="hidden p-8 text-center text-slate-400">
-                Tidak ada dokumen
+            <div id="empty" class="hidden p-12 text-center text-slate-400">
+                <div class="text-6xl mb-3">📭</div>
+                <p class="text-lg font-medium">Tidak ada dokumen</p>
+                <p class="text-sm mt-1">Dokumen akan muncul setelah admin menambah pendaftar</p>
             </div>
         </div>
 
-        <div class="mt-4 p-4 bg-blue-50 rounded">
-            <button onclick="forceSync()" class="bg-blue-600 text-white px-4 py-2 rounded">🔄 Sinkronisasi Manual</button>
-            <p class="text-xs text-slate-600 mt-2">Auto-refresh setiap 3 detik</p>
+        <div class="mt-6 p-5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+            <div class="flex items-center justify-between">
+                <div>
+                    <button onclick="forceSync()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-2">
+                        <span>🔄</span> Sinkronisasi Manual
+                    </button>
+                    <p class="text-xs text-slate-600 mt-2">✨ Auto-refresh setiap 3 detik</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm font-semibold text-blue-900">Status Koneksi</p>
+                    <p class="text-xs text-emerald-600 font-medium">● Online & Tersinkronisasi</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // KEY YANG SAMA DENGAN ADMIN
+        // SLIDESHOW CONFIGURATION
+        let currentSlide = 0;
+        const totalSlides = 3;
+        let slideshowInterval;
+
+        function startSlideshow() {
+            slideshowInterval = setInterval(() => {
+                nextSlide();
+            }, 4000); // Change slide every 4 seconds
+        }
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('.stats-slide');
+            const indicators = document.querySelectorAll('.indicator');
+            
+            // Remove active from current
+            slides[currentSlide].classList.remove('active');
+            slides[currentSlide].classList.add('prev');
+            indicators[currentSlide].classList.remove('active');
+            
+            // Move to next
+            currentSlide = (currentSlide + 1) % totalSlides;
+            
+            // Add active to new
+            slides[currentSlide].classList.remove('prev');
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+        }
+
+        function goToSlide(index) {
+            const slides = document.querySelectorAll('.stats-slide');
+            const indicators = document.querySelectorAll('.indicator');
+            
+            slides[currentSlide].classList.remove('active');
+            indicators[currentSlide].classList.remove('active');
+            
+            currentSlide = index;
+            
+            slides[currentSlide].classList.remove('prev');
+            slides[currentSlide].classList.add('active');
+            indicators[currentSlide].classList.add('active');
+            
+            // Reset interval
+            clearInterval(slideshowInterval);
+            startSlideshow();
+        }
+
+        // DATABASE KEY
         const DB_KEY_VERIFIKATOR = 'portal_beasiswa_dokumen';
-        
         let dokumenList = [];
 
         function validateSession() {
@@ -78,6 +258,7 @@
             console.log('🔍 Dashboard Verifikator loaded');
             loadData();
             renderTable();
+            startSlideshow(); // Start the slideshow
             
             // Auto-refresh setiap 3 detik
             setInterval(() => {
@@ -103,7 +284,18 @@
         function forceSync() {
             loadData();
             renderTable();
-            alert('✅ Sinkronisasi berhasil! Data: ' + dokumenList.length);
+            
+            // Show success message
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '✅ Berhasil!';
+            btn.classList.remove('bg-blue-600');
+            btn.classList.add('bg-green-600');
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('bg-green-600');
+                btn.classList.add('bg-blue-600');
+            }, 2000);
         }
 
         function renderTable() {
@@ -124,29 +316,34 @@
                 let buttons = '';
                 
                 if (doc.status === 'Belum Diperiksa') {
-                    statusBadge = '<span class="bg-amber-100 text-amber-800 px-2 py-1 rounded text-xs">⏳ Belum Diperiksa</span>';
+                    statusBadge = '<span class="bg-amber-100 text-amber-800 px-3 py-1.5 rounded-lg text-xs font-semibold">⏳ Belum Diperiksa</span>';
                     buttons = `
-                        <button onclick="updateStatus(${doc.id}, 'Disetujui')" class="bg-green-500 text-white px-3 py-1 rounded text-xs mr-1">Setujui</button>
-                        <button onclick="updateStatus(${doc.id}, 'Ditolak')" class="bg-red-500 text-white px-3 py-1 rounded text-xs">Tolak</button>
+                        <button onclick="updateStatus(${doc.id}, 'Disetujui')" class="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition mr-1">Setujui</button>
+                        <button onclick="updateStatus(${doc.id}, 'Ditolak')" class="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition">Tolak</button>
                     `;
                 } else if (doc.status === 'Disetujui') {
-                    statusBadge = '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">✅ Disetujui</span>';
+                    statusBadge = '<span class="bg-green-100 text-green-800 px-3 py-1.5 rounded-lg text-xs font-semibold">✅ Disetujui</span>';
                     buttons = '<span class="text-slate-400 text-xs">Sudah diproses</span>';
                 } else {
-                    statusBadge = '<span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">❌ Ditolak</span>';
+                    statusBadge = '<span class="bg-red-100 text-red-800 px-3 py-1.5 rounded-lg text-xs font-semibold">❌ Ditolak</span>';
                     buttons = '<span class="text-slate-400 text-xs">Sudah diproses</span>';
                 }
                 
                 return `
-                    <tr class="border-b">
-                        <td class="p-3">
-                            <div class="font-semibold">${doc.namaMhs}</div>
+                    <tr class="border-b hover:bg-slate-50 transition">
+                        <td class="p-4">
+                            <div class="font-semibold text-slate-800">${doc.namaMhs}</div>
                             <div class="text-xs text-slate-400">NIM: ${doc.nim}</div>
                         </td>
-                        <td class="p-3 text-amber-700">📄 ${doc.jenis}</td>
-                        <td class="p-3 text-sm text-slate-600">${doc.tanggal}</td>
-                        <td class="p-3">${statusBadge}</td>
-                        <td class="p-3 text-center">${buttons}</td>
+                        <td class="p-4 text-amber-700">
+                            <div class="flex items-center gap-2">
+                                <span>📄</span>
+                                <span class="text-sm">${doc.jenis}</span>
+                            </div>
+                        </td>
+                        <td class="p-4 text-sm text-slate-600">${doc.tanggal}</td>
+                        <td class="p-4">${statusBadge}</td>
+                        <td class="p-4 text-center">${buttons}</td>
                     </tr>
                 `;
             }).join('');
@@ -160,14 +357,49 @@
                 doc.status = newStatus;
                 localStorage.setItem(DB_KEY_VERIFIKATOR, JSON.stringify(dokumenList));
                 renderTable();
-                alert('✅ Status diubah menjadi: ' + newStatus);
+                
+                // Show notification
+                const messages = {
+                    'Disetujui': '✅ Berkas berhasil disetujui!',
+                    'Ditolak': '❌ Berkas ditolak!'
+                };
+                alert(messages[newStatus]);
             }
         }
 
         function updateStats() {
-            document.getElementById('count-total').textContent = dokumenList.length;
-            document.getElementById('count-pending').textContent = dokumenList.filter(d => d.status === 'Belum Diperiksa').length;
-            document.getElementById('count-done').textContent = dokumenList.filter(d => d.status !== 'Belum Diperiksa').length;
+            const total = dokumenList.length;
+            const pending = dokumenList.filter(d => d.status === 'Belum Diperiksa').length;
+            const done = dokumenList.filter(d => d.status !== 'Belum Diperiksa').length;
+            
+            // Animate numbers
+            animateValue('count-total', total);
+            animateValue('count-pending', pending);
+            animateValue('count-done', done);
+        }
+
+        function animateValue(elementId, value) {
+            const element = document.getElementById(elementId);
+            const start = parseInt(element.textContent) || 0;
+            const end = value;
+            const duration = 500;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+                const current = Math.floor(start + (end - start) * easeOutQuart);
+                
+                element.textContent = current;
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
         }
     </script>
 </body>
